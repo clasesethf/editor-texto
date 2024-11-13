@@ -1612,96 +1612,133 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Función principal de formateo de texto con soporte para fórmulas
         function formatearTexto(texto) {
-            let formatoHTML = texto;
+    let formatoHTML = texto;
 
-            // Preservar fórmulas matemáticas primero
-            const formulas = [];
-            let index = 0;
+    // Preservar fórmulas matemáticas primero
+    const formulas = [];
+    let index = 0;
 
-            // Guardar fórmulas en bloque
-            formatoHTML = formatoHTML.replace(/\$\$([\s\S]*?)\$\$/g, function(match) {
-                formulas.push(match);
-                return `##FORMULA${index++}##`;
-            });
+    // Guardar fórmulas en bloque
+    formatoHTML = formatoHTML.replace(/\$\$([\s\S]*?)\$\$/g, function(match) {
+        formulas.push(match);
+        return `##FORMULA${index++}##`;
+    });
 
-            // Guardar fórmulas inline
-            formatoHTML = formatoHTML.replace(/\$([\s\S]*?)\$/g, function(match) {
-                formulas.push(match);
-                return `##FORMULA${index++}##`;
-            });
-            
-            // Detectar y procesar tablas
-            if (formatoHTML.includes('|')) {
-                const lineas = formatoHTML.split('\n');
-                let tablaHTML = '<table class="rubrica-tabla">';
-                let esEncabezado = true;
-                let primeraFila = true;
-                let enTabla = false;
+    // Guardar fórmulas inline
+    formatoHTML = formatoHTML.replace(/\$([\s\S]*?)\$/g, function(match) {
+        formulas.push(match);
+        return `##FORMULA${index++}##`;
+    });
 
-                lineas.forEach(linea => {
-                    linea = linea.trim();
-                    if (linea.startsWith('|')) {
-                        if (!enTabla) {
-                            tablaHTML = '<table class="rubrica-tabla">';
-                            enTabla = true;
-                        }
-                        
-                        if (!linea.includes('---')) {
-                            const celdas = linea.split('|')
-                                .filter(celda => celda.trim() !== '');
+    // Procesar las tablas en su lugar
+    let lines = formatoHTML.split('\n');
+    let newLines = [];
+    let tableLines = [];
+    let inTable = false;
 
-                            tablaHTML += '<tr>';
-                            celdas.forEach(celda => {
-                                let contenidoCelda = celda.trim()
-                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                    .replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-                                if (primeraFila || contenidoCelda.includes('Nivel')) {
-                                    tablaHTML += `<th>${contenidoCelda}</th>`;
-                                } else {
-                                    tablaHTML += `<td>${contenidoCelda}</td>`;
-                                }
-                            });
-                            tablaHTML += '</tr>';
-                            primeraFila = false;
-                        }
-                    } else {
-                        if (enTabla) {
-                            tablaHTML += '</table>';
-                            enTabla = false;
-                            formatoHTML = formatoHTML.replace(/\|.*\n/g, '');
-                            formatoHTML = formatoHTML + tablaHTML;
-                        }
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        
+        if (line.startsWith('|')) {
+            if (!inTable) {
+                inTable = true;
+                tableLines = [];
+                tableLines.push(line);
+            } else {
+                tableLines.push(line);
+            }
+        } else {
+            if (inTable) {
+                // Construir la tabla HTML
+                let tableHTML = '<table class="rubrica-tabla">\n';
+                let isHeader = true;
+                
+                tableLines.forEach((tableLine, index) => {
+                    // Ignorar líneas de separación (que contienen ---)
+                    if (!tableLine.includes('---')) {
+                        let cells = tableLine.split('|')
+                            .filter(cell => cell.trim() !== '')
+                            .map(cell => cell.trim());
+                            
+                        tableHTML += '<tr>';
+                        cells.forEach(cell => {
+                            let cellContent = cell
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+                                
+                            if (isHeader) {
+                                tableHTML += `<th>${cellContent}</th>`;
+                            } else {
+                                tableHTML += `<td>${cellContent}</td>`;
+                            }
+                        });
+                        tableHTML += '</tr>\n';
+                        isHeader = false;
                     }
                 });
-
-                if (enTabla) {
-                    tablaHTML += '</table>';
-                    formatoHTML = formatoHTML.replace(/\|.*\n/g, '');
-                    formatoHTML = formatoHTML + tablaHTML;
-                }
+                
+                tableHTML += '</table>';
+                newLines.push(tableHTML);
+                inTable = false;
             }
-
-            // Procesar formato normal
-            formatoHTML = formatoHTML
-                .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
-                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>')
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-                .replace(/\n\n/g, '<br><br>');
-
-            // Restaurar fórmulas
-            formulas.forEach((formula, i) => {
-                formatoHTML = formatoHTML.replace(`##FORMULA${i}##`, 
-                    `<div class="math-formula">${formula}</div>`);
-            });
-
-            return formatoHTML;
+            newLines.push(line);
         }
+    }
+    
+    // Si la última línea era parte de una tabla
+    if (inTable) {
+        let tableHTML = '<table class="rubrica-tabla">\n';
+        let isHeader = true;
+        
+        tableLines.forEach((tableLine, index) => {
+            if (!tableLine.includes('---')) {
+                let cells = tableLine.split('|')
+                    .filter(cell => cell.trim() !== '')
+                    .map(cell => cell.trim());
+                    
+                tableHTML += '<tr>';
+                cells.forEach(cell => {
+                    let cellContent = cell
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+                        
+                    if (isHeader) {
+                        tableHTML += `<th>${cellContent}</th>`;
+                    } else {
+                        tableHTML += `<td>${cellContent}</td>`;
+                    }
+                });
+                tableHTML += '</tr>\n';
+                isHeader = false;
+            }
+        });
+        
+        tableHTML += '</table>';
+        newLines.push(tableHTML);
+    }
+
+    formatoHTML = newLines.join('\n');
+
+    // Procesar formato normal
+    formatoHTML = formatoHTML
+        .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/\n\n/g, '<br><br>');
+
+    // Restaurar fórmulas
+    formulas.forEach((formula, i) => {
+        formatoHTML = formatoHTML.replace(`##FORMULA${i}##`, 
+            `<div class="math-formula">${formula}</div>`);
+    });
+
+    return formatoHTML;
+}
 
         // Función para aplicar comandos de formato
         function formatText(command) {
@@ -2320,4 +2357,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
         </script>
   
-</body></html>  
+</body></html>
