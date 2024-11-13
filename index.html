@@ -314,7 +314,7 @@
         }
 
         #downloadButton {
-            background: linear-gradient(to bottom, #6f42c1, #532e8f);
+            background: linear-gradient(to bottom, #007bff, #0056b3);
         }
 
         /* Área de previsualización */
@@ -702,6 +702,39 @@
     border-radius: 50%;
     cursor: se-resize;
     display: none;
+}
+      .saved-edit-item {
+    background: white;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    transition: background-color 0.2s;
+}
+
+.saved-edit-item:hover {
+    background: #f8f9fa;
+}
+
+.saved-edit-item button {
+    margin-right: 8px;
+}
+
+/* Estilo para el botón de autoguardado cuando está activo */
+.autosave-active {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+/* Indicador de autoguardado */
+.autosave-indicator {
+    font-size: 12px;
+    color: #6c757d;
+    margin-left: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.autosave-indicator.visible {
+    opacity: 1;
 }
 </style>
 <style type="text/css">
@@ -1112,7 +1145,7 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
         <div class="buttons-container no-print">
            
             <button class="button" id="printButton" onclick="imprimirContenido()">Imprimir</button>
-            <button class="button" id="downloadButton" onclick="descargarContenido()">Descargar HTML</button>
+            <button class="button" id="downloadButton" onclick="descargarContenido()">Descargar</button>
             <button class="button" id="clearButton" onclick="borrarContenido()">Borrar</button>
         </div>
         
@@ -1152,12 +1185,7 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
                     <i class="fas fa-align-justify"></i>
                 </button>
             </div>
-            <div class="toolbar-group">
-                <button class="tool-button" onclick="formatText('h1')" title="Título 1">H1</button>
-                <button class="tool-button" onclick="formatText('h2')" title="Título 2">H2</button>
-                <button class="tool-button" onclick="formatText('h3')" title="Título 3">H3</button>
-                <button class="tool-button" onclick="formatText('h4')" title="Título 4">H4</button>
-            </div>
+            
             <div class="toolbar-group">
                 <button class="tool-button" onclick="insertLink()" title="Insertar enlace">
                     <i class="fas fa-link"></i>
@@ -1206,7 +1234,7 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
             </div>
             <div class="toolbar-group">
                 <select class="font-size-selector" onchange="changeFontSize(this.value)" title="Tamaño de fuente">
-                    <option value="">Tamaño de fuente</option>
+                    <option value="">Tamaño de texto</option>
                     <option value="1">Muy pequeño</option>
                     <option value="2">Pequeño</option>
                     <option value="3">Normal</option>
@@ -1239,7 +1267,7 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
             <div class="logo-container1">
                 <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
             </div>
-            <h2 style="text-align: center; color: #007bff;">Material Didáctico</h2>
+            
             <div id="contenidoRubrica" contenteditable="true"></div>
         </div>
 
@@ -2355,6 +2383,188 @@ function alignMedia(alignment) {
 document.addEventListener('DOMContentLoaded', function() {
     initMediaEvents();
 });
+      
+      // Variables globales para el autoguardado
+let autoSaveInterval = null;
+const AUTO_SAVE_DELAY = 30000; // 30 segundos
+
+// Función para inicializar el sistema de autoguardado
+function initAutoSave() {
+    // Agregar los nuevos botones a la barra de herramientas
+    const toolbarGroup = document.createElement('div');
+    toolbarGroup.className = 'toolbar-group';
+    toolbarGroup.innerHTML = `
+        <button class="tool-button" onclick="saveCurrentEdit()" title="Guardar edición actual">
+            <i class="fas fa-save"></i>
+        </button>
+        <button class="tool-button" onclick="loadSavedEdit()" title="Cargar edición guardada">
+            <i class="fas fa-folder-open"></i>
+        </button>
+        <button class="tool-button" onclick="showSavedEdits()" title="Ver ediciones guardadas">
+            <i class="fas fa-history"></i>
+        </button>
+    `;
+    
+    document.querySelector('.editor-toolbar').appendChild(toolbarGroup);
+
+    // Iniciar autoguardado
+    startAutoSave();
+    
+    // Cargar la última edición si existe
+    loadLastAutoSave();
+}
+
+// Función para iniciar el autoguardado
+function startAutoSave() {
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+    }
+    
+    autoSaveInterval = setInterval(() => {
+        autoSaveCurrentEdit();
+    }, AUTO_SAVE_DELAY);
+}
+
+// Función para autoguardar la edición actual
+function autoSaveCurrentEdit() {
+    const content = {
+        input: document.getElementById('rubricaInput').value,
+        preview: document.getElementById('contenidoRubrica').innerHTML,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('lastAutoSave', JSON.stringify(content));
+}
+
+// Función para guardar manualmente la edición actual
+function saveCurrentEdit() {
+    const name = prompt('Ingresa un nombre para esta edición:');
+    if (!name) return;
+    
+    const content = {
+        input: document.getElementById('rubricaInput').value,
+        preview: document.getElementById('contenidoRubrica').innerHTML,
+        timestamp: new Date().toISOString(),
+        name: name
+    };
+    
+    // Obtener ediciones guardadas existentes
+    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
+    savedEdits.push(content);
+    
+    // Guardar la lista actualizada
+    localStorage.setItem('savedEdits', JSON.stringify(savedEdits));
+    
+    alert('Edición guardada correctamente');
+}
+
+// Función para cargar la última autoguardada
+function loadLastAutoSave() {
+    const lastSave = localStorage.getItem('lastAutoSave');
+    if (lastSave) {
+        const content = JSON.parse(lastSave);
+        const timeDiff = (new Date() - new Date(content.timestamp)) / 1000 / 60; // diferencia en minutos
+        
+        if (timeDiff < 60) { // Solo mostrar si es menor a 1 hora
+            if (confirm('Se encontró una edición automáticamente guardada. ¿Deseas cargarla?')) {
+                document.getElementById('rubricaInput').value = content.input;
+                document.getElementById('contenidoRubrica').innerHTML = content.preview;
+                document.getElementById('preview').style.display = 'block';
+            }
+        }
+    }
+}
+
+// Función para mostrar el diálogo de ediciones guardadas
+function showSavedEdits() {
+    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
+    if (savedEdits.length === 0) {
+        alert('No hay ediciones guardadas');
+        return;
+    }
+    
+    // Crear el diálogo
+    const dialog = document.createElement('div');
+    dialog.className = 'custom-dialog';
+    dialog.id = 'savedEditsDialog';
+    dialog.style.display = 'block';
+    
+    // Lista de ediciones
+    const editsList = savedEdits.map((edit, index) => `
+        <div class="saved-edit-item" style="padding: 10px; border-bottom: 1px solid #ddd;">
+            <strong>${edit.name}</strong>
+            <br>
+            <small>Guardado el: ${new Date(edit.timestamp).toLocaleString()}</small>
+            <br>
+            <button onclick="loadSavedEdit(${index})" class="dialog-button dialog-button-primary" style="margin-top: 5px;">
+                Cargar
+            </button>
+            <button onclick="deleteSavedEdit(${index})" class="dialog-button dialog-button-secondary" style="margin-top: 5px;">
+                Eliminar
+            </button>
+        </div>
+    `).join('');
+    
+    dialog.innerHTML = `
+        <h3>Ediciones Guardadas</h3>
+        <div style="max-height: 400px; overflow-y: auto;">
+            ${editsList}
+        </div>
+        <div class="dialog-buttons">
+            <button onclick="closeEditsDialog()" class="dialog-button dialog-button-secondary">
+                Cerrar
+            </button>
+        </div>
+    `;
+    
+    // Crear overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-dialog-overlay';
+    overlay.id = 'savedEditsOverlay';
+    overlay.style.display = 'block';
+    
+    // Agregar al documento
+    document.body.appendChild(overlay);
+    document.body.appendChild(dialog);
+}
+
+// Función para cargar una edición guardada
+function loadSavedEdit(index) {
+    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
+    const edit = savedEdits[index];
+    
+    if (edit) {
+        document.getElementById('rubricaInput').value = edit.input;
+        document.getElementById('contenidoRubrica').innerHTML = edit.preview;
+        document.getElementById('preview').style.display = 'block';
+        closeEditsDialog();
+    }
+}
+
+// Función para eliminar una edición guardada
+function deleteSavedEdit(index) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta edición guardada?')) return;
+    
+    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
+    savedEdits.splice(index, 1);
+    localStorage.setItem('savedEdits', JSON.stringify(savedEdits));
+    
+    // Actualizar el diálogo
+    closeEditsDialog();
+    showSavedEdits();
+}
+
+// Función para cerrar el diálogo de ediciones
+function closeEditsDialog() {
+    const dialog = document.getElementById('savedEditsDialog');
+    const overlay = document.getElementById('savedEditsOverlay');
+    
+    if (dialog) dialog.remove();
+    if (overlay) overlay.remove();
+}
+
+// Inicializar cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', initAutoSave);
         </script>
   
 </body></html>
