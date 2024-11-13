@@ -1392,254 +1392,9 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
     </div>
 </div>
     <script>
-        // Variables globales para grabación
-let mediaRecorder = null;
-let recordedChunks = [];
-let mediaStream = null;
-let timerInterval = null;
-let startTime = null;
-let recordingType = null;
-
-// Función principal de grabación
-async function startRecording(type) {
-    try {
-        if (mediaRecorder && mediaRecorder.state === 'recording') {
-            return;
-        }
-
-        // Verificar si el navegador soporta la API
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('Tu navegador no soporta la grabación de medios. Por favor, usa Chrome, Firefox o Edge actualizado.');
-        }
-
-        // Primero solicitar permisos explícitamente
-        const constraints = {
-            audio: {
-                echoCancellation: true,
-                noiseSuppression: true,
-                sampleRate: 44100
-            },
-            video: type === 'video' ? {
-                width: { ideal: 1280 },
-                height: { ideal: 720 },
-                facingMode: 'user'
-            } : false
-        };
-
-        try {
-            mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-        } catch (permissionError) {
-            if (permissionError.name === 'NotAllowedError') {
-                throw new Error('Por favor, permite el acceso a tu ' + (type === 'video' ? 'cámara y micrófono' : 'micrófono') + ' para continuar.');
-            } else if (permissionError.name === 'NotFoundError') {
-                throw new Error('No se encontró ningún dispositivo de ' + (type === 'video' ? 'video/audio' : 'audio') + '. Por favor, verifica que esté conectado correctamente.');
-            } else {
-                throw permissionError;
-            }
-        }
-        
-        if (type === 'video') {
-            const videoPreview = document.getElementById('videoPreview');
-            videoPreview.srcObject = mediaStream;
-            videoPreview.play().catch(console.error);
-        }
-        
-        // Intentar crear el MediaRecorder con diferentes códecs
-        let options = {};
-        const mimeTypes = type === 'video' 
-            ? ['video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']
-            : ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
-            
-        for (const mimeType of mimeTypes) {
-            if (MediaRecorder.isTypeSupported(mimeType)) {
-                options = { mimeType };
-                break;
-            }
-        }
-
-        mediaRecorder = new MediaRecorder(mediaStream, options);
-        recordedChunks = [];
-        recordingType = type;
-        
-        mediaRecorder.ondataavailable = (e) => {
-            if (e.data.size > 0) {
-                recordedChunks.push(e.data);
-            }
-        };
-        
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(recordedChunks, {
-                type: mediaRecorder.mimeType
-            });
-            const url = URL.createObjectURL(blob);
-            const preview = document.getElementById(`${type}Preview`);
-            preview.src = url;
-            preview.srcObject = null;
-            
-            // Actualizar interfaz
-            document.getElementById(`start${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
-            document.getElementById(`stop${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
-            document.getElementById(`save${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'inline-flex';
-            
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-        };
-        
-        // Iniciar grabación y temporizador
-        mediaRecorder.start(1000); // Fragmentar la grabación cada segundo
-        startTime = new Date();
-        timerInterval = setInterval(() => updateTimer(`${type}Timer`), 1000);
-        
-        // Actualizar interfaz
-        document.getElementById(`${type}Status`).textContent = 'Grabando...';
-        document.getElementById(`start${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
-        document.getElementById(`stop${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'inline-flex';
-        
-    } catch (error) {
-        console.error('Error al iniciar la grabación:', error);
-        const errorElement = document.getElementById(`${type}Error`);
-        errorElement.textContent = error.message;
-        errorElement.style.display = 'block';
-        
-        // Asegurarse de limpiar los recursos si hay un error
-        if (mediaStream) {
-            stopMediaStream();
-        }
-    }
-}
-
-// Función para detener la grabación
-function stopRecording() {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-        mediaRecorder.stop();
-        stopMediaStream();
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        document.getElementById(`${recordingType}Status`).textContent = 'Grabación completada';
-    }
-}
-
-// Función para guardar la grabación
-function saveRecording() {
-    if (recordedChunks.length === 0) return;
-    
-    const blob = new Blob(recordedChunks, {
-        type: recordingType === 'video' ? 'video/webm' : 'audio/webm'
-    });
-    const url = URL.createObjectURL(blob);
-    
-    // Insertar en el editor
-    const contentDiv = document.getElementById('contenidoRubrica');
-    contentDiv.focus();
-    
-    const mediaElement = recordingType === 'video' 
-        ? `<div class="media-container"><video src="${url}" controls style="max-width:100%;"></video></div>`
-        : `<div class="media-container"><audio src="${url}" controls></audio></div>`;
-    
-    document.execCommand('insertHTML', false, mediaElement);
-    closeRecordingDialog(recordingType);
-}
-
-
-// Función para detener el stream de medios
-function stopMediaStream() {
-    if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-        mediaStream = null;
-    }
-}
-
-// Función para actualizar el temporizador
-function updateTimer(timerId) {
-    const now = new Date();
-    const diff = now - startTime;
-    const minutes = Math.floor(diff / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-    document.getElementById(timerId).textContent = 
-        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-
-// Función para cerrar el diálogo
-function closeRecordingDialog(type) {
-    const dialogId = `${type}RecordingDialog`;
-    const overlayId = `${type}RecordingOverlay`;
-    
-    document.getElementById(dialogId).style.display = 'none';
-    document.getElementById(overlayId).style.display = 'none';
-    
-    // Detener la grabación si está activa
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-        mediaRecorder.stop();
-    }
-    
-    // Limpiar el stream de medios
-    stopMediaStream();
-    
-    // Detener el temporizador
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-    
-    // Resetear la interfaz
-    document.getElementById(`${type}Timer`).textContent = '00:00';
-    document.getElementById(`${type}Status`).textContent = 'Listo para grabar';
-    document.getElementById(`${type}Error`).style.display = 'none';
-    
-    // Limpiar la vista previa
-    const preview = document.getElementById(`${type}Preview`);
-    preview.srcObject = null;
-    preview.src = '';
-}
-      
-      // Función para mostrar el diálogo de grabación
-function showRecordingDialog(type) {
-    recordingType = type;
-    const dialogId = `${type}RecordingDialog`;
-    const overlayId = `${type}RecordingOverlay`;
-    
-    document.getElementById(overlayId).style.display = 'block';
-    document.getElementById(dialogId).style.display = 'block';
-    
-    // Resetear la interfaz
-    document.getElementById(`${type}Timer`).textContent = '00:00';
-    document.getElementById(`${type}Status`).textContent = 'El navegador solicitará permisos para acceder a tu ' + 
-        (type === 'video' ? 'cámara y micrófono' : 'micrófono') + '. Por favor, permite el acceso cuando se te solicite.';
-    document.getElementById(`${type}Error`).style.display = 'none';
-    document.getElementById(`start${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'inline-flex';
-    document.getElementById(`stop${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
-    document.getElementById(`save${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
-    
-    const preview = document.getElementById(`${type}Preview`);
-    preview.srcObject = null;
-    preview.src = '';
-}
-      
-// Event listeners para los botones de audio
-document.addEventListener('DOMContentLoaded', function() {
-    // Audio recording buttons
-    document.getElementById('startAudioRecord').addEventListener('click', () => startRecording('audio'));
-    document.getElementById('stopAudioRecord').addEventListener('click', stopRecording);
-    document.getElementById('saveAudioRecord').addEventListener('click', saveRecording);
-    document.getElementById('cancelAudioRecord').addEventListener('click', () => closeRecordingDialog('audio'));
-
-    // Video recording buttons
-    document.getElementById('startVideoRecord').addEventListener('click', () => startRecording('video'));
-    document.getElementById('stopVideoRecord').addEventListener('click', stopRecording);
-    document.getElementById('saveVideoRecord').addEventListener('click', saveRecording);
-    document.getElementById('cancelVideoRecord').addEventListener('click', () => closeRecordingDialog('video'));
-
-    // Agregar esta línea
-    initMediaEvents();
-});
-
-
-        // Función principal de formateo de texto con soporte para fórmulas
-        function formatearTexto(texto) {
+        // Parte 1: Funciones principales del editor
+// Función principal de formateo de texto con soporte para fórmulas
+function formatearTexto(texto) {
     let formatoHTML = texto;
 
     // Preservar fórmulas matemáticas primero
@@ -1768,482 +1523,308 @@ document.addEventListener('DOMContentLoaded', function() {
     return formatoHTML;
 }
 
-        // Función para aplicar comandos de formato
-        function formatText(command) {
-            const contentDiv = document.getElementById('contenidoRubrica');
-            contentDiv.focus();
-            if (command === 'h1' || command === 'h2' || command === 'h3' || command === 'h4') {
-                document.execCommand('formatBlock', false, command.toUpperCase());
-            } else {
-                document.execCommand(command, false, null);
-            }
-        }
+// Función para aplicar comandos de formato
+function formatText(command) {
+    const contentDiv = document.getElementById('contenidoRubrica');
+    contentDiv.focus();
+    if (command === 'h1' || command === 'h2' || command === 'h3' || command === 'h4') {
+        document.execCommand('formatBlock', false, command.toUpperCase());
+    } else {
+        document.execCommand(command, false, null);
+    }
+}
 
-        // Función para cambiar el color del texto
-        function changeColor(color) {
-            const contentDiv = document.getElementById('contenidoRubrica');
-            contentDiv.focus();
-            document.execCommand('foreColor', false, color);
-        }
+// Función para cambiar el color del texto
+function changeColor(color) {
+    const contentDiv = document.getElementById('contenidoRubrica');
+    contentDiv.focus();
+    document.execCommand('foreColor', false, color);
+}
 
-        // Función para cambiar el tamaño de fuente
-        function changeFontSize(size) {
-            const contentDiv = document.getElementById('contenidoRubrica');
-            contentDiv.focus();
-
-            document.execCommand('styleWithCSS', false, true);
-            
-            let fontSize;
-            switch (size) {
-                case '1': fontSize = '8px'; break;
-                case '2': fontSize = '10px'; break;
-                case '3': fontSize = '12px'; break;
-                case '4': fontSize = '16px'; break;
-                case '5': fontSize = '18px'; break;
-                case '6': fontSize = '24px'; break;
-                case '7': fontSize = '32px'; break;
-                default: fontSize = '12px';
-            }
-
-            document.execCommand('fontSize', false, '7');
-            const fontElements = contentDiv.querySelectorAll('font[size="7"]');
-            fontElements.forEach(element => {
-                element.removeAttribute('size');
-                element.style.fontSize = fontSize;
-            });
-        }
-
-        // Funciones para manejo del diálogo de medios
-        function showMediaDialog() {
-            document.getElementById('mediaDialog').style.display = 'block';
-            document.getElementById('mediaDialogOverlay').style.display = 'block';
-        }
-
-        function closeMediaDialog() {
-            document.getElementById('mediaDialog').style.display = 'none';
-            document.getElementById('mediaDialogOverlay').style.display = 'none';
-            stopMediaStream();
-        }
-
-        function stopMediaStream() {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-        }
-
-        // Función auxiliar para obtener ID de YouTube
-        function getYouTubeVideoId(url) {
-            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[7].length == 11) ? match[7] : null;
-        }
-
-      
-     
-        // Funciones para inserción de medios
-        function insertLink() {
-          showCustomDialog('linkDialog')
-            const url = prompt('Ingresa la URL del enlace:');
-            if (url) {
-                const text = prompt('Ingresa el texto para mostrar:', url);
-                const contentDiv = document.getElementById('contenidoRubrica');
-                contentDiv.focus();
-                
-                if (text) {
-                    document.execCommand('insertHTML', false, 
-                        `<a href="${url}" target="_blank">${text}</a>`);
-                } else {
-                    document.execCommand('createLink', false, url);
-                }
-            }
-        }
-
-        // Función para insertar imagen
-        function insertImage() {
-          showCustomDialog('imageDialog')  
-          const url = prompt('Ingresa la URL de la imagen:');
-            if (url) {
-                currentMediaUrl = url;
-                currentMediaType = 'image';
-                const preview = document.getElementById('mediaPreviewContainer');
-                preview.innerHTML = `<img src="${url}" alt="Vista previa">`;
-                showMediaDialog();
-            }
-        }
-
-        // Función para insertar video
-        function insertVideo() {
-           showCustomDialog('videoDialog')  
-          const url = prompt('Ingresa la URL del video (YouTube o URL directa):');
-            if (url) {
-                currentMediaUrl = url;
-                currentMediaType = 'video';
-                const preview = document.getElementById('mediaPreviewContainer');
-                
-                if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                    const videoId = getYouTubeVideoId(url);
-                    if (videoId) {
-                        preview.innerHTML = `
-                            <iframe width="560" height="315" 
-                                src="https://www.youtube.com/embed/${videoId}" 
-                                frameborder="0" allowfullscreen>
-                            </iframe>`;
-                        showMediaDialog();
-                    }
-                } else {
-                    preview.innerHTML = `
-                        <video src="${url}" controls style="max-width:100%;">
-                        </video>`;
-                    showMediaDialog();
-                }
-            }
-        }
-
-        // Funciones para grabación
-
-
-        function insertCurrentMedia() {
-            let html = '';
-            switch (currentMediaType) {
-                case 'image':
-                    html = `<img src="${currentMediaUrl}" alt="Imagen insertada" style="max-width:100%;">`;
-                    break;
-                case 'video':
-                    if (currentMediaUrl.includes('youtube.com') || currentMediaUrl.includes('youtu.be')) {
-                        const videoId = getYouTubeVideoId(currentMediaUrl);
-                        html = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" 
-                            frameborder="0" allowfullscreen></iframe>`;
-                    } else {
-                        html = `<video src="${currentMediaUrl}" controls style="max-width:100%;"></video>`;
-                    }
-                    break;
-                case 'audio':
-                    html = `<audio src="${currentMediaUrl}" controls></audio>`;
-                    break;
-            }
-            
-            if (html) {
-                document.execCommand('insertHTML', false, html);
-            }
-            closeMediaDialog();
-        }
-    
-      
-              // Función para previsualizar el contenido
-        function previsualizarContenido() {
-            const texto = document.getElementById('rubricaInput').value;
-            if (!texto.trim()) {
-                alert('Por favor, pegá el texto antes de previsualizar.');
-                return;
-            }
-
-            const contenidoRubrica = document.getElementById('contenidoRubrica');
-            contenidoRubrica.innerHTML = formatearTexto(texto);
-            contenidoRubrica.focus();
-            
-            // Renderizar fórmulas matemáticas
-            if (window.MathJax) {
-                MathJax.typesetPromise().then(() => {
-                    document.getElementById('preview').style.display = 'block';
-                    document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
-                }).catch((err) => console.log('Error al renderizar fórmulas:', err));
-            } else {
-                document.getElementById('preview').style.display = 'block';
-                document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        // Función para imprimir el contenido
-// Función para previsualizar el contenido
-        function previsualizarContenido() {
-            const texto = document.getElementById('rubricaInput').value;
-            if (!texto.trim()) {
-                alert('Por favor, pegá el texto antes de previsualizar.');
-                return;
-            }
-
-            const preview = document.getElementById('preview');
-            const contenidoRubrica = document.getElementById('contenidoRubrica');
-            
-            // Asegurarse que el contenido sea editable
-            contenidoRubrica.setAttribute('contenteditable', 'true');
-            
-            // Limpiar y establecer el nuevo contenido
-            contenidoRubrica.innerHTML = formatearTexto(texto);
-            
-            // Mostrar la previsualización
-            preview.style.display = 'block';
-            
-            // Renderizar fórmulas matemáticas si están disponibles
-            if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
-                MathJax.typesetPromise([preview])
-                    .then(() => {
-                        preview.scrollIntoView({ behavior: 'smooth' });
-                    })
-                    .catch((err) => console.error('Error al renderizar fórmulas:', err));
-            } else {
-                preview.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        // Función para imprimir el contenido
-                // Función para imprimir el contenido
-        function imprimirContenido() {
-            const preview = document.getElementById('preview');
-            const contenidoRubrica = document.getElementById('contenidoRubrica');
-            
-            if (preview.style.display === 'none') {
-                alert('Por favor, previsualiza el contenido antes de imprimir.');
-                return;
-            }
-
-            const ventanaImprimir = window.open('', '_blank');
-            ventanaImprimir.document.write(`
-                <html>
-                <head>
-                    <title>Material Didáctico</title>
-                    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script>
-                    <script>
-                        window.MathJax = {
-                            tex: {
-                                inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-                                displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
-                                processEscapes: true,
-                                tags: 'none'  // No mostrar números en las fórmulas
-                            },
-                            svg: {
-                                fontCache: 'global'
-                            },
-                            startup: {
-                                pageReady: () => {
-                                    return MathJax.startup.defaultPageReady().then(() => {
-                                        setTimeout(function() {
-                                            window.print();
-                                            window.close();
-                                        }, 1000);
-                                    });
-                                }
-                            }
-                        };
-                    <\/script>
-                    <style>
-                        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-                        body { 
-                            font-family: 'Roboto', sans-serif; 
-                            padding: 20px;
-                            color: inherit;
-                        }
-                        * { 
-                            -webkit-print-color-adjust: exact !important;
-                            color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
-                        img { max-width: 100%; height: auto; }
-                        iframe, video, audio { max-width: 100%; }
-                        .logo-container1 { text-align: center; margin-bottom: 20px; }
-                        .logo-container1 img { width: 80px; }
-                        h1, h2, h3, h4 { color: #007bff; }
-                        a { color: #007bff; }
-                        .math-formula { 
-                            margin: 1em 0;
-                            page-break-inside: avoid;
-                        }
-                        table { 
-                            border-collapse: collapse; 
-                            width: 100%; 
-                            margin: 20px 0;
-                            page-break-inside: avoid;
-                        }
-                        th, td { 
-                            border: 1px solid #ddd; 
-                            padding: 12px; 
-                            text-align: left;
-                        }
-                        th { background-color: #f8f9fa; }
-                        tr:nth-child(even) { background-color: #f9f9f9; }
-                    </style>
-                </head>
-                <body>
-                    <div class="logo-container1">
-                        <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
-                    </div>
-                    <h2 style="text-align: center; color: #007bff;">Material Didáctico</h2>
-                    ${contenidoRubrica.innerHTML}
-                </body>
-                </html>
-            `);
-            
-            ventanaImprimir.document.close();
-        }
-
-        // Event Listener para previsualización automática
-        document.getElementById('rubricaInput').addEventListener('input', function() {
-            const preview = document.getElementById('preview');
-            const contenidoRubrica = document.getElementById('contenidoRubrica');
-            
-            if (this.value.trim()) {
-                contenidoRubrica.innerHTML = formatearTexto(this.value);
-                preview.style.display = 'block';
-                // Renderizar fórmulas matemáticas
-                if (window.MathJax) {
-                    MathJax.typesetPromise().catch((err) => 
-                        console.log('Error al renderizar fórmulas:', err));
-                }
-            } else {
-                preview.style.display = 'none';
-            }
-        });
-
-        // Event Listener para barra de herramientas fija
-        window.addEventListener('scroll', function() {
-            const toolbar = document.querySelector('.editor-toolbar');
-            if (window.scrollY > 200) {
-                toolbar.classList.add('sticky');
-            } else {
-                toolbar.classList.remove('sticky');
-            }
-        });
-
-        // Función para borrar el contenido
-        function borrarContenido() {
-            document.getElementById('rubricaInput').value = '';
-            document.getElementById('contenidoRubrica').innerHTML = '';
-            document.getElementById('preview').style.display = 'none';
-        }
-      function descargarContenido() {
-                const preview = document.getElementById('preview');
-                const contenidoRubrica = document.getElementById('contenidoRubrica');
-                
-                if (preview.style.display === 'none') {
-                    alert('Por favor, previsualiza el contenido antes de descargar.');
-                    return;
-                }
-
-                const htmlContent = `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Material Didáctico</title>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script>
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-                displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
-                processEscapes: true,
-                tags: 'none'
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    <\/script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        img { max-width: 100%; height: auto; }
-        iframe, video, audio { max-width: 100%; }
-        .logo-container { text-align: center; margin-bottom: 20px; }
-        .logo-container img { width: 80px; }
-        h1, h2, h3, h4 { color: #007bff; }
-        a { color: #007bff; }
-        .math-formula { margin: 1em 0; }
-        table { 
-            border-collapse: collapse; 
-            width: 100%; 
-            margin: 20px 0;
-        }
-        th, td { 
-            border: 1px solid #ddd; 
-            padding: 12px; 
-            text-align: left;
-        }
-        th { background-color: #f8f9fa; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-    </style>
-</head>
-<body>
-    <div class="logo-container">
-        <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
-    </div>
-    <h2 style="text-align: center; color: #007bff;">Material Didáctico</h2>
-    ${contenidoRubrica.innerHTML}
-</body>
-</html>`;
-
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'material_didactico.html';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            }
-      function applyHighlight() {
+// Función para aplicar resaltado
+function applyHighlight() {
     const contentDiv = document.getElementById('contenidoRubrica');
     contentDiv.focus();
     const color = document.getElementById('highlightColorPicker').value;
     document.execCommand('hiliteColor', false, color);
 }
-      function insertH5P() {
-    showCustomDialog('h5pDialog'); 
-        const url = prompt('Ingresa la URL del contenido H5P:');
-    if (url) {
-        const iframeCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen="true"></iframe>`;
-        const contentDiv = document.getElementById('contenidoRubrica');
-        contentDiv.focus();
-        document.execCommand('insertHTML', false, iframeCode);
+
+// Función para cambiar el tamaño de fuente
+function changeFontSize(size) {
+    const contentDiv = document.getElementById('contenidoRubrica');
+    contentDiv.focus();
+
+    document.execCommand('styleWithCSS', false, true);
+    
+    let fontSize;
+    switch (size) {
+        case '1': fontSize = '8px'; break;
+        case '2': fontSize = '10px'; break;
+        case '3': fontSize = '12px'; break;
+        case '4': fontSize = '16px'; break;
+        case '5': fontSize = '18px'; break;
+        case '6': fontSize = '24px'; break;
+        case '7': fontSize = '32px'; break;
+        default: fontSize = '12px';
+    }
+
+    document.execCommand('fontSize', false, '7');
+    const fontElements = contentDiv.querySelectorAll('font[size="7"]');
+    fontElements.forEach(element => {
+        element.removeAttribute('size');
+        element.style.fontSize = fontSize;
+    });
+}
+
+// Función para previsualizar el contenido
+function previsualizarContenido() {
+    const texto = document.getElementById('rubricaInput').value;
+    if (!texto.trim()) {
+        alert('Por favor, pegá el texto antes de previsualizar.');
+        return;
+    }
+
+    const preview = document.getElementById('preview');
+    const contenidoRubrica = document.getElementById('contenidoRubrica');
+    
+    // Asegurarse que el contenido sea editable
+    contenidoRubrica.setAttribute('contenteditable', 'true');
+    
+    // Limpiar y establecer el nuevo contenido
+    contenidoRubrica.innerHTML = formatearTexto(texto);
+    
+    // Mostrar la previsualización
+    preview.style.display = 'block';
+    
+    // Renderizar fórmulas matemáticas si están disponibles
+    if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+        MathJax.typesetPromise([preview])
+            .then(() => {
+                preview.scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch((err) => console.error('Error al renderizar fórmulas:', err));
+    } else {
+        preview.scrollIntoView({ behavior: 'smooth' });
     }
 }
-      function showCustomDialog(dialogId) {
-            document.getElementById(dialogId + 'Overlay').style.display = 'block';
-            document.getElementById(dialogId).style.display = 'block';
-            // Limpiar campos y errores
-            const inputs = document.querySelectorAll(`#${dialogId} input`);
-            inputs.forEach(input => input.value = '');
-            const errors = document.querySelectorAll(`#${dialogId} .error-message`);
-            errors.forEach(error => error.style.display = 'none');
-        }
 
-        function closeCustomDialog(dialogId) {
-            document.getElementById(dialogId + 'Overlay').style.display = 'none';
-            document.getElementById(dialogId).style.display = 'none';
-        }
+// Función para imprimir el contenido
+function imprimirContenido() {
+    const preview = document.getElementById('preview');
+    const contenidoRubrica = document.getElementById('contenidoRubrica');
+    
+    if (preview.style.display === 'none') {
+        alert('Por favor, previsualiza el contenido antes de imprimir.');
+        return;
+    }
 
-        function validateUrl(url) {
-            try {
-                new URL(url);
-                return true;
-            } catch {
-                return false;
+    const ventanaImprimir = window.open('', '_blank');
+    ventanaImprimir.document.write(`
+        <html>
+        <head>
+            <title>Material Didáctico</title>
+            <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script>
+            <script>
+                window.MathJax = {
+                    tex: {
+                        inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+                        displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+                        processEscapes: true,
+                        tags: 'none'
+                    },
+                    svg: {
+                        fontCache: 'global'
+                    },
+                    startup: {
+                        pageReady: () => {
+                            return MathJax.startup.defaultPageReady().then(() => {
+                                setTimeout(function() {
+                                    window.print();
+                                    window.close();
+                                }, 1000);
+                            });
+                        }
+                    }
+                };
+            <\/script>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+                body { 
+                    font-family: 'Roboto', sans-serif; 
+                    padding: 20px;
+                    color: inherit;
+                }
+                * { 
+                    -webkit-print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+                img { max-width: 100%; height: auto; }
+                iframe, video, audio { max-width: 100%; }
+                .logo-container1 { text-align: center; margin-bottom: 20px; }
+                .logo-container1 img { width: 80px; }
+                h1, h2, h3, h4 { color: #007bff; }
+                a { color: #007bff; }
+                .math-formula { 
+                    margin: 1em 0;
+                    page-break-inside: avoid;
+                }
+                table { 
+                    border-collapse: collapse; 
+                    width: 100%; 
+                    margin: 20px 0;
+                    page-break-inside: avoid;
+                }
+                th, td { 
+                    border: 1px solid #ddd; 
+                    padding: 12px; 
+                    text-align: left;
+                }
+                th { background-color: #f8f9fa; }
+                tr:nth-child(even) { background-color: #f9f9f9; }
+            </style>
+        </head>
+        <body>
+            <div class="logo-container1">
+                <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
+            </div>
+            <h2 style="text-align: center; color: #007bff;">Material Didáctico</h2>
+            ${contenidoRubrica.innerHTML}
+        </body>
+        </html>
+    `);
+    
+    ventanaImprimir.document.close();
+}
+
+// Función para borrar el contenido
+function borrarContenido() {
+    document.getElementById('rubricaInput').value = '';
+    document.getElementById('contenidoRubrica').innerHTML = '';
+    document.getElementById('preview').style.display = 'none';
+}
+
+// Event Listener para previsualización automática
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('rubricaInput').addEventListener('input', function() {
+        const preview = document.getElementById('preview');
+        const contenidoRubrica = document.getElementById('contenidoRubrica');
+        
+        if (this.value.trim()) {
+            contenidoRubrica.innerHTML = formatearTexto(this.value);
+            preview.style.display = 'block';
+            // Renderizar fórmulas matemáticas
+            if (window.MathJax) {
+                MathJax.typesetPromise().catch((err) => 
+                    console.log('Error al renderizar fórmulas:', err));
             }
+        } else {
+            preview.style.display = 'none';
         }
-      function insertCustomLink() {
-            const url = document.getElementById('linkUrl').value;
-            const text = document.getElementById('linkText').value;
-            
-            if (!validateUrl(url)) {
-                document.getElementById('linkUrlError').style.display = 'block';
-                return;
-            }
+    });
+});
 
-            const contentDiv = document.getElementById('contenidoRubrica');
-            contentDiv.focus();
-            document.execCommand('insertHTML', false, 
-                `<a href="${url}" target="_blank">${text || url}</a>`);
-            closeCustomDialog('linkDialog');
-        }
+// Event Listener para barra de herramientas fija
+window.addEventListener('scroll', function() {
+    const toolbar = document.querySelector('.editor-toolbar');
+    if (window.scrollY > 200) {
+        toolbar.classList.add('sticky');
+    } else {
+        toolbar.classList.remove('sticky');
+    }
+});
+      // Parte 2: Funciones de medios y diálogos
 
-        function insertCustomImage() {
+// Variable para almacenar el elemento multimedia seleccionado actualmente
+let selectedMedia = null;
+let currentMediaUrl = '';
+let currentMediaType = '';
+
+// Función para validar URLs
+function validateUrl(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// Funciones para mostrar/cerrar diálogos personalizados
+function showCustomDialog(dialogId) {
+    document.getElementById(dialogId + 'Overlay').style.display = 'block';
+    document.getElementById(dialogId).style.display = 'block';
+    // Limpiar campos y errores
+    const inputs = document.querySelectorAll(`#${dialogId} input`);
+    inputs.forEach(input => input.value = '');
+    const errors = document.querySelectorAll(`#${dialogId} .error-message`);
+    errors.forEach(error => error.style.display = 'none');
+}
+
+function closeCustomDialog(dialogId) {
+    document.getElementById(dialogId + 'Overlay').style.display = 'none';
+    document.getElementById(dialogId).style.display = 'none';
+}
+
+// Función para insertar enlaces
+function insertLink() {
+    // Prevenir el diálogo predeterminado del navegador
+    event.preventDefault();
+    
+    // Guardar la selección actual
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+    
+    // Mostrar el diálogo personalizado
+    document.getElementById('linkDialogOverlay').style.display = 'block';
+    document.getElementById('linkDialog').style.display = 'block';
+    
+    // Pre-llenar el texto seleccionado si existe
+    document.getElementById('linkText').value = selectedText;
+    document.getElementById('linkUrl').value = '';
+    document.getElementById('linkUrlError').style.display = 'none';
+}
+
+// Función para insertar el enlace desde el diálogo personalizado
+function insertCustomLink() {
+    const url = document.getElementById('linkUrl').value;
+    const text = document.getElementById('linkText').value;
+    
+    if (!validateUrl(url)) {
+        document.getElementById('linkUrlError').style.display = 'block';
+        return;
+    }
+    
+    const contentDiv = document.getElementById('contenidoRubrica');
+    contentDiv.focus();
+    
+    // Crear el enlace HTML
+    const linkHtml = `<a href="${url}" target="_blank">${text || url}</a>`;
+    
+    // Insertar el enlace
+    document.execCommand('insertHTML', false, linkHtml);
+    
+    // Cerrar el diálogo
+    closeCustomDialog('linkDialog');
+}
+
+// Función para insertar imágenes
+function insertImage() {
+    // Prevenir el diálogo predeterminado del navegador
+    event.preventDefault();
+    
+    // Mostrar el diálogo personalizado
+    document.getElementById('imageDialogOverlay').style.display = 'block';
+    document.getElementById('imageDialog').style.display = 'block';
+    
+    // Limpiar campos
+    document.getElementById('imageUrl').value = '';
+    document.getElementById('imageUrlError').style.display = 'none';
+}
+
+// Función para insertar la imagen desde el diálogo personalizado
+function insertCustomImage() {
     const url = document.getElementById('imageUrl').value;
     
     if (!validateUrl(url)) {
@@ -2258,7 +1839,29 @@ document.addEventListener('DOMContentLoaded', function() {
     closeCustomDialog('imageDialog');
 }
 
-        function insertCustomVideo() {
+// Función para obtener ID de YouTube
+function getYouTubeVideoId(url) {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length == 11) ? match[7] : null;
+}
+
+// Función para insertar videos
+function insertVideo() {
+    // Prevenir el diálogo predeterminado del navegador
+    event.preventDefault();
+    
+    // Mostrar el diálogo personalizado
+    document.getElementById('videoDialogOverlay').style.display = 'block';
+    document.getElementById('videoDialog').style.display = 'block';
+    
+    // Limpiar campos
+    document.getElementById('videoUrl').value = '';
+    document.getElementById('videoUrlError').style.display = 'none';
+}
+
+// Función para insertar el video desde el diálogo personalizado
+function insertCustomVideo() {
     const url = document.getElementById('videoUrl').value;
     
     if (!validateUrl(url)) {
@@ -2283,25 +1886,30 @@ document.addEventListener('DOMContentLoaded', function() {
     document.execCommand('insertHTML', false, html);
     closeCustomDialog('videoDialog');
 }
-        function insertCustomH5P() {
-            const url = document.getElementById('h5pUrl').value;
-            
-            if (!validateUrl(url)) {
-                document.getElementById('h5pUrlError').style.display = 'block';
-                return;
-            }
 
-            const contentDiv = document.getElementById('contenidoRubrica');
-            contentDiv.focus();
-            document.execCommand('insertHTML', false, 
-                `<iframe src="${url}" width="800" height="600" 
-                frameborder="0" allowfullscreen="true"></iframe>`);
-            closeCustomDialog('h5pDialog');
-        }
-      // Variable para almacenar el elemento multimedia seleccionado actualmente
-let selectedMedia = null;
+// Función para insertar H5P
+function insertH5P() {
+    showCustomDialog('h5pDialog');
+}
 
-// Función para inicializar los eventos de los elementos multimedia
+// Función para insertar contenido H5P desde el diálogo
+function insertCustomH5P() {
+    const url = document.getElementById('h5pUrl').value;
+    
+    if (!validateUrl(url)) {
+        document.getElementById('h5pUrlError').style.display = 'block';
+        return;
+    }
+
+    const contentDiv = document.getElementById('contenidoRubrica');
+    contentDiv.focus();
+    document.execCommand('insertHTML', false, 
+        `<iframe src="${url}" width="800" height="600" 
+        frameborder="0" allowfullscreen="true"></iframe>`);
+    closeCustomDialog('h5pDialog');
+}
+
+// Funciones para manejo de elementos multimedia
 function initMediaEvents() {
     const contenidoRubrica = document.getElementById('contenidoRubrica');
     
@@ -2379,14 +1987,374 @@ function alignMedia(alignment) {
     }
 }
 
-// Inicializar eventos cuando el documento esté listo
+// Event listeners para cerrar diálogos y manejar tecla Escape
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar eventos de medios
     initMediaEvents();
+    
+    // Event listeners para cerrar diálogos al hacer clic en el overlay
+    const overlays = document.querySelectorAll('.custom-dialog-overlay');
+    overlays.forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                const dialogId = overlay.id.replace('Overlay', '');
+                closeCustomDialog(dialogId);
+            }
+        });
+    });
+    
+    // Event listeners para cerrar con la tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const visibleDialog = document.querySelector('.custom-dialog[style*="display: block"]');
+            if (visibleDialog) {
+                const dialogId = visibleDialog.id;
+                closeCustomDialog(dialogId);
+            }
+        }
+    });
 });
-      
-      // Variables globales para el autoguardado
+      // Parte 3: Funciones de grabación de audio y video
+
+// Variables globales para grabación
+let mediaRecorder = null;
+let recordedChunks = [];
+let mediaStream = null;
+let timerInterval = null;
+let startTime = null;
+let recordingType = null;
+
+// Función principal de grabación
+async function startRecording(type) {
+    try {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            return;
+        }
+
+        // Verificar si el navegador soporta la API
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('Tu navegador no soporta la grabación de medios. Por favor, usa Chrome, Firefox o Edge actualizado.');
+        }
+
+        // Solicitar permisos explícitamente
+        const constraints = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                sampleRate: 44100
+            },
+            video: type === 'video' ? {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                facingMode: 'user'
+            } : false
+        };
+
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        } catch (permissionError) {
+            if (permissionError.name === 'NotAllowedError') {
+                throw new Error('Por favor, permite el acceso a tu ' + (type === 'video' ? 'cámara y micrófono' : 'micrófono') + ' para continuar.');
+            } else if (permissionError.name === 'NotFoundError') {
+                throw new Error('No se encontró ningún dispositivo de ' + (type === 'video' ? 'video/audio' : 'audio') + '. Por favor, verifica que esté conectado correctamente.');
+            } else {
+                throw permissionError;
+            }
+        }
+        
+        // Configurar vista previa de video si es necesario
+        if (type === 'video') {
+            const videoPreview = document.getElementById('videoPreview');
+            videoPreview.srcObject = mediaStream;
+            videoPreview.play().catch(console.error);
+        }
+        
+        // Intentar crear el MediaRecorder con diferentes códecs
+        let options = {};
+        const mimeTypes = type === 'video' 
+            ? ['video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']
+            : ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
+            
+        for (const mimeType of mimeTypes) {
+            if (MediaRecorder.isTypeSupported(mimeType)) {
+                options = { mimeType };
+                break;
+            }
+        }
+
+        mediaRecorder = new MediaRecorder(mediaStream, options);
+        recordedChunks = [];
+        recordingType = type;
+        
+        // Configurar event handlers del MediaRecorder
+        mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+                recordedChunks.push(e.data);
+            }
+        };
+        
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, {
+                type: mediaRecorder.mimeType
+            });
+            const url = URL.createObjectURL(blob);
+            const preview = document.getElementById(`${type}Preview`);
+            preview.src = url;
+            preview.srcObject = null;
+            
+            // Actualizar interfaz
+            document.getElementById(`start${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
+            document.getElementById(`stop${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
+            document.getElementById(`save${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'inline-flex';
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        };
+        
+        // Iniciar grabación y temporizador
+        mediaRecorder.start(1000); // Fragmentar la grabación cada segundo
+        startTime = new Date();
+        timerInterval = setInterval(() => updateTimer(`${type}Timer`), 1000);
+        
+        // Actualizar interfaz
+        document.getElementById(`${type}Status`).textContent = 'Grabando...';
+        document.getElementById(`start${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
+        document.getElementById(`stop${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'inline-flex';
+        
+    } catch (error) {
+        console.error('Error al iniciar la grabación:', error);
+        const errorElement = document.getElementById(`${type}Error`);
+        errorElement.textContent = error.message;
+        errorElement.style.display = 'block';
+        
+        // Asegurarse de limpiar los recursos si hay un error
+        if (mediaStream) {
+            stopMediaStream();
+        }
+    }
+}
+
+// Función para detener la grabación
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        stopMediaStream();
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        document.getElementById(`${recordingType}Status`).textContent = 'Grabación completada';
+    }
+}
+
+// Función para guardar la grabación
+function saveRecording() {
+    if (recordedChunks.length === 0) return;
+    
+    const blob = new Blob(recordedChunks, {
+        type: recordingType === 'video' ? 'video/webm' : 'audio/webm'
+    });
+    const url = URL.createObjectURL(blob);
+    
+    // Insertar en el editor
+    const contentDiv = document.getElementById('contenidoRubrica');
+    contentDiv.focus();
+    
+    const mediaElement = recordingType === 'video' 
+        ? `<div class="media-container"><video src="${url}" controls style="max-width:100%;"></video></div>`
+        : `<div class="media-container"><audio src="${url}" controls></audio></div>`;
+    
+    document.execCommand('insertHTML', false, mediaElement);
+    closeRecordingDialog(recordingType);
+}
+
+// Función para detener el stream de medios
+function stopMediaStream() {
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+    }
+}
+
+// Función para actualizar el temporizador
+function updateTimer(timerId) {
+    const now = new Date();
+    const diff = now - startTime;
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    document.getElementById(timerId).textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Función para mostrar el diálogo de grabación
+function showRecordingDialog(type) {
+    recordingType = type;
+    const dialogId = `${type}RecordingDialog`;
+    const overlayId = `${type}RecordingOverlay`;
+    
+    document.getElementById(overlayId).style.display = 'block';
+    document.getElementById(dialogId).style.display = 'block';
+    
+    // Resetear la interfaz
+    document.getElementById(`${type}Timer`).textContent = '00:00';
+    document.getElementById(`${type}Status`).textContent = 'El navegador solicitará permisos para acceder a tu ' + 
+        (type === 'video' ? 'cámara y micrófono' : 'micrófono') + '. Por favor, permite el acceso cuando se te solicite.';
+    document.getElementById(`${type}Error`).style.display = 'none';
+    document.getElementById(`start${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'inline-flex';
+    document.getElementById(`stop${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
+    document.getElementById(`save${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
+    
+    const preview = document.getElementById(`${type}Preview`);
+    preview.srcObject = null;
+    preview.src = '';
+}
+
+// Función para cerrar el diálogo de grabación
+function closeRecordingDialog(type) {
+    const dialogId = `${type}RecordingDialog`;
+    const overlayId = `${type}RecordingOverlay`;
+    
+    document.getElementById(dialogId).style.display = 'none';
+    document.getElementById(overlayId).style.display = 'none';
+    
+    // Detener la grabación si está activa
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+    }
+    
+    // Limpiar el stream de medios
+    stopMediaStream();
+    
+    // Detener el temporizador
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    
+    // Resetear la interfaz
+    document.getElementById(`${type}Timer`).textContent = '00:00';
+    document.getElementById(`${type}Status`).textContent = 'Listo para grabar';
+    document.getElementById(`${type}Error`).style.display = 'none';
+    
+    // Limpiar la vista previa
+    const preview = document.getElementById(`${type}Preview`);
+    preview.srcObject = null;
+    preview.src = '';
+}
+
+// Inicializar event listeners cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Audio recording buttons
+    document.getElementById('startAudioRecord').addEventListener('click', () => startRecording('audio'));
+    document.getElementById('stopAudioRecord').addEventListener('click', stopRecording);
+    document.getElementById('saveAudioRecord').addEventListener('click', saveRecording);
+    document.getElementById('cancelAudioRecord').addEventListener('click', () => closeRecordingDialog('audio'));
+
+    // Video recording buttons
+    document.getElementById('startVideoRecord').addEventListener('click', () => startRecording('video'));
+    document.getElementById('stopVideoRecord').addEventListener('click', stopRecording);
+    document.getElementById('saveVideoRecord').addEventListener('click', saveRecording);
+    document.getElementById('cancelVideoRecord').addEventListener('click', () => closeRecordingDialog('video'));
+});
+      // Parte 4: Funciones de autoguardado y gestión de archivos
+
+// Variables globales para el autoguardado
 let autoSaveInterval = null;
 const AUTO_SAVE_DELAY = 30000; // 30 segundos
+
+// Función para descargar el contenido
+function descargarContenido() {
+    const preview = document.getElementById('preview');
+    const contenidoRubrica = document.getElementById('contenidoRubrica');
+    
+    if (preview.style.display === 'none') {
+        alert('Por favor, previsualiza el contenido antes de descargar.');
+        return;
+    }
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Didáctico</title>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+                displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+                processEscapes: true,
+                tags: 'none'
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    <\/script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        img { max-width: 100%; height: auto; }
+        iframe, video, audio { max-width: 100%; }
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        .logo-container img { width: 80px; }
+        h1, h2, h3, h4 { color: #007bff; }
+        a { color: #007bff; }
+        .math-formula { margin: 1em 0; }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin: 20px 0;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left;
+        }
+        th { background-color: #f8f9fa; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .media-container {
+            margin: 10px 0;
+            max-width: 100%;
+        }
+        .media-container img,
+        .media-container video,
+        .media-container audio {
+            max-width: 100%;
+        }
+        .media-container.align-left { float: left; margin-right: 20px; }
+        .media-container.align-center { display: block; margin: 0 auto; text-align: center; }
+        .media-container.align-right { float: right; margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
+    </div>
+    <h2 style="text-align: center; color: #007bff;">Material Didáctico</h2>
+    ${contenidoRubrica.innerHTML}
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+    a.download = `material_didactico_${timestamp}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
 
 // Función para inicializar el sistema de autoguardado
 function initAutoSave() {
@@ -2403,6 +2371,7 @@ function initAutoSave() {
         <button class="tool-button" onclick="showSavedEdits()" title="Ver ediciones guardadas">
             <i class="fas fa-history"></i>
         </button>
+        <span class="autosave-indicator" id="autoSaveIndicator"></span>
     `;
     
     document.querySelector('.editor-toolbar').appendChild(toolbarGroup);
@@ -2434,6 +2403,14 @@ function autoSaveCurrentEdit() {
     };
     
     localStorage.setItem('lastAutoSave', JSON.stringify(content));
+    
+    // Mostrar indicador de autoguardado
+    const indicator = document.getElementById('autoSaveIndicator');
+    indicator.textContent = 'Guardado automático completado';
+    indicator.classList.add('visible');
+    setTimeout(() => {
+        indicator.classList.remove('visible');
+    }, 2000);
 }
 
 // Función para guardar manualmente la edición actual
@@ -2502,6 +2479,9 @@ function showSavedEdits() {
             <button onclick="deleteSavedEdit(${index})" class="dialog-button dialog-button-secondary" style="margin-top: 5px;">
                 Eliminar
             </button>
+            <button onclick="downloadSavedEdit(${index})" class="dialog-button dialog-button-primary" style="margin-top: 5px;">
+                Descargar
+            </button>
         </div>
     `).join('');
     
@@ -2511,6 +2491,9 @@ function showSavedEdits() {
             ${editsList}
         </div>
         <div class="dialog-buttons">
+            <button onclick="importSavedEdit()" class="dialog-button dialog-button-primary">
+                Importar
+            </button>
             <button onclick="closeEditsDialog()" class="dialog-button dialog-button-secondary">
                 Cerrar
             </button>
@@ -2554,6 +2537,57 @@ function deleteSavedEdit(index) {
     showSavedEdits();
 }
 
+// Función para descargar una edición guardada
+function downloadSavedEdit(index) {
+    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
+    const edit = savedEdits[index];
+    
+    if (edit) {
+        const content = JSON.stringify(edit);
+        const blob = new Blob([content], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${edit.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date(edit.timestamp).toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+}
+
+// Función para importar una edición
+function importSavedEdit() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const edit = JSON.parse(e.target.result);
+                const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
+                savedEdits.push(edit);
+                localStorage.setItem('savedEdits', JSON.stringify(savedEdits));
+                
+                // Actualizar el diálogo
+                closeEditsDialog();
+                showSavedEdits();
+            } catch (error) {
+                console.error('Error parsing file:', error);
+                alert('Error al importar el archivo. Asegúrate de que sea un archivo válido.');
+            }
+        };
+        
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
 // Función para cerrar el diálogo de ediciones
 function closeEditsDialog() {
     const dialog = document.getElementById('savedEditsDialog');
@@ -2563,8 +2597,10 @@ function closeEditsDialog() {
     if (overlay) overlay.remove();
 }
 
-// Inicializar cuando el documento esté listo
-document.addEventListener('DOMContentLoaded', initAutoSave);
+// Inicializar autoguardado cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initAutoSave();
+});
         </script>
   
 </body></html>
