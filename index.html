@@ -2356,208 +2356,36 @@ function descargarContenido() {
     window.URL.revokeObjectURL(url);
 }
 
-// Función para inicializar el sistema de autoguardado
-function initAutoSave() {
-    // Agregar los nuevos botones a la barra de herramientas
-    const toolbarGroup = document.createElement('div');
-    toolbarGroup.className = 'toolbar-group';
-    toolbarGroup.innerHTML = `
-        <button class="tool-button" onclick="saveCurrentEdit()" title="Guardar edición actual">
-            <i class="fas fa-save"></i>
-        </button>
-        <button class="tool-button" onclick="loadSavedEdit()" title="Cargar edición guardada">
-            <i class="fas fa-folder-open"></i>
-        </button>
-        <button class="tool-button" onclick="showSavedEdits()" title="Ver ediciones guardadas">
-            <i class="fas fa-history"></i>
-        </button>
-        <span class="autosave-indicator" id="autoSaveIndicator"></span>
-    `;
-    
-    document.querySelector('.editor-toolbar').appendChild(toolbarGroup);
-
-    // Iniciar autoguardado
-    startAutoSave();
-    
-    // Cargar la última edición si existe
-    loadLastAutoSave();
-}
-
-// Función para iniciar el autoguardado
-function startAutoSave() {
-    if (autoSaveInterval) {
-        clearInterval(autoSaveInterval);
-    }
-    
-    autoSaveInterval = setInterval(() => {
-        autoSaveCurrentEdit();
-    }, AUTO_SAVE_DELAY);
-}
-
-// Función para autoguardar la edición actual
-function autoSaveCurrentEdit() {
+// Función para guardar el estado actual
+function saveCurrentEdit() {
+    // Obtener el contenido actual
     const content = {
         input: document.getElementById('rubricaInput').value,
         preview: document.getElementById('contenidoRubrica').innerHTML,
         timestamp: new Date().toISOString()
     };
     
-    localStorage.setItem('lastAutoSave', JSON.stringify(content));
+    // Crear el blob con el contenido
+    const blob = new Blob([JSON.stringify(content)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     
-    // Mostrar indicador de autoguardado
-    const indicator = document.getElementById('autoSaveIndicator');
-    indicator.textContent = 'Guardado automático completado';
-    indicator.classList.add('visible');
-    setTimeout(() => {
-        indicator.classList.remove('visible');
-    }, 2000);
-}
-
-// Función para guardar manualmente la edición actual
-function saveCurrentEdit() {
-    const name = prompt('Ingresa un nombre para esta edición:');
-    if (!name) return;
+    // Crear el enlace de descarga
+    const a = document.createElement('a');
+    a.href = url;
+    const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+    a.download = `edicion_${timestamp}.json`;
     
-    const content = {
-        input: document.getElementById('rubricaInput').value,
-        preview: document.getElementById('contenidoRubrica').innerHTML,
-        timestamp: new Date().toISOString(),
-        name: name
-    };
+    // Descargar el archivo
+    document.body.appendChild(a);
+    a.click();
     
-    // Obtener ediciones guardadas existentes
-    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
-    savedEdits.push(content);
-    
-    // Guardar la lista actualizada
-    localStorage.setItem('savedEdits', JSON.stringify(savedEdits));
-    
-    alert('Edición guardada correctamente');
-}
-
-// Función para cargar la última autoguardada
-function loadLastAutoSave() {
-    const lastSave = localStorage.getItem('lastAutoSave');
-    if (lastSave) {
-        const content = JSON.parse(lastSave);
-        const timeDiff = (new Date() - new Date(content.timestamp)) / 1000 / 60; // diferencia en minutos
-        
-        if (timeDiff < 60) { // Solo mostrar si es menor a 1 hora
-            if (confirm('Se encontró una edición automáticamente guardada. ¿Deseas cargarla?')) {
-                document.getElementById('rubricaInput').value = content.input;
-                document.getElementById('contenidoRubrica').innerHTML = content.preview;
-                document.getElementById('preview').style.display = 'block';
-            }
-        }
-    }
-}
-
-// Función para mostrar el diálogo de ediciones guardadas
-function showSavedEdits() {
-    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
-    if (savedEdits.length === 0) {
-        alert('No hay ediciones guardadas');
-        return;
-    }
-    
-    // Crear el diálogo
-    const dialog = document.createElement('div');
-    dialog.className = 'custom-dialog';
-    dialog.id = 'savedEditsDialog';
-    dialog.style.display = 'block';
-    
-    // Lista de ediciones
-    const editsList = savedEdits.map((edit, index) => `
-        <div class="saved-edit-item" style="padding: 10px; border-bottom: 1px solid #ddd;">
-            <strong>${edit.name}</strong>
-            <br>
-            <small>Guardado el: ${new Date(edit.timestamp).toLocaleString()}</small>
-            <br>
-            <button onclick="loadSavedEdit(${index})" class="dialog-button dialog-button-primary" style="margin-top: 5px;">
-                Cargar
-            </button>
-            <button onclick="deleteSavedEdit(${index})" class="dialog-button dialog-button-secondary" style="margin-top: 5px;">
-                Eliminar
-            </button>
-            <button onclick="downloadSavedEdit(${index})" class="dialog-button dialog-button-primary" style="margin-top: 5px;">
-                Descargar
-            </button>
-        </div>
-    `).join('');
-    
-    dialog.innerHTML = `
-        <h3>Ediciones Guardadas</h3>
-        <div style="max-height: 400px; overflow-y: auto;">
-            ${editsList}
-        </div>
-        <div class="dialog-buttons">
-            <button onclick="importSavedEdit()" class="dialog-button dialog-button-primary">
-                Importar
-            </button>
-            <button onclick="closeEditsDialog()" class="dialog-button dialog-button-secondary">
-                Cerrar
-            </button>
-        </div>
-    `;
-    
-    // Crear overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'custom-dialog-overlay';
-    overlay.id = 'savedEditsOverlay';
-    overlay.style.display = 'block';
-    
-    // Agregar al documento
-    document.body.appendChild(overlay);
-    document.body.appendChild(dialog);
+    // Limpiar
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 // Función para cargar una edición guardada
-function loadSavedEdit(index) {
-    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
-    const edit = savedEdits[index];
-    
-    if (edit) {
-        document.getElementById('rubricaInput').value = edit.input;
-        document.getElementById('contenidoRubrica').innerHTML = edit.preview;
-        document.getElementById('preview').style.display = 'block';
-        closeEditsDialog();
-    }
-}
-
-// Función para eliminar una edición guardada
-function deleteSavedEdit(index) {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta edición guardada?')) return;
-    
-    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
-    savedEdits.splice(index, 1);
-    localStorage.setItem('savedEdits', JSON.stringify(savedEdits));
-    
-    // Actualizar el diálogo
-    closeEditsDialog();
-    showSavedEdits();
-}
-
-// Función para descargar una edición guardada
-function downloadSavedEdit(index) {
-    const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
-    const edit = savedEdits[index];
-    
-    if (edit) {
-        const content = JSON.stringify(edit);
-        const blob = new Blob([content], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${edit.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date(edit.timestamp).toISOString().slice(0,10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-}
-
-// Función para importar una edición
-function importSavedEdit() {
+function loadSavedEdit() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -2568,18 +2396,24 @@ function importSavedEdit() {
         
         reader.onload = function(e) {
             try {
-                const edit = JSON.parse(e.target.result);
-                const savedEdits = JSON.parse(localStorage.getItem('savedEdits') || '[]');
-                savedEdits.push(edit);
-                localStorage.setItem('savedEdits', JSON.stringify(savedEdits));
+                const content = JSON.parse(e.target.result);
                 
-                // Actualizar el diálogo
-                closeEditsDialog();
-                showSavedEdits();
+                // Restaurar el contenido
+                document.getElementById('rubricaInput').value = content.input;
+                document.getElementById('contenidoRubrica').innerHTML = content.preview;
+                document.getElementById('preview').style.display = 'block';
+                
+                // Opcional: Mostrar mensaje de éxito
+                alert('Edición cargada correctamente');
+                
             } catch (error) {
-                console.error('Error parsing file:', error);
-                alert('Error al importar el archivo. Asegúrate de que sea un archivo válido.');
+                console.error('Error al cargar el archivo:', error);
+                alert('Error al cargar el archivo. Asegúrate de que sea un archivo de edición válido.');
             }
+        };
+        
+        reader.onerror = function() {
+            alert('Error al leer el archivo');
         };
         
         reader.readAsText(file);
@@ -2588,18 +2422,25 @@ function importSavedEdit() {
     input.click();
 }
 
-// Función para cerrar el diálogo de ediciones
-function closeEditsDialog() {
-    const dialog = document.getElementById('savedEditsDialog');
-    const overlay = document.getElementById('savedEditsOverlay');
+// Modificar la barra de herramientas para incluir los nuevos botones
+function initSaveLoadButtons() {
+    const toolbarGroup = document.createElement('div');
+    toolbarGroup.className = 'toolbar-group';
+    toolbarGroup.innerHTML = `
+        <button class="tool-button" onclick="saveCurrentEdit()" title="Guardar edición actual">
+            <i class="fas fa-save"></i>
+        </button>
+        <button class="tool-button" onclick="loadSavedEdit()" title="Cargar edición guardada">
+            <i class="fas fa-folder-open"></i>
+        </button>
+    `;
     
-    if (dialog) dialog.remove();
-    if (overlay) overlay.remove();
+    document.querySelector('.editor-toolbar').appendChild(toolbarGroup);
 }
 
-// Inicializar autoguardado cuando el documento esté listo
+// Inicializar los botones cuando el documento esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    initAutoSave();
+    initSaveLoadButtons();
 });
         </script>
   
