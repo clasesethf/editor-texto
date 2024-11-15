@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Convertir Texto para Imprimir</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <!-- MathJax -->
-    <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         window.MathJax = {
             tex: {
@@ -104,1036 +104,9 @@
             outline: none;
             box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
         }
-    
-      
-            /* Estilos de la barra de herramientas */
-        .editor-toolbar {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: rgba(248, 249, 250, 0.95);
-            backdrop-filter: blur(8px);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: box-shadow 0.3s ease;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .editor-toolbar.sticky {
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .toolbar-group {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            padding-right: 10px;
-            border-right: 1px solid #ddd;
-        }
-
-        .toolbar-group:last-child {
-            border-right: none;
-        }
-
-        .tool-button {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 6px 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .tool-button:hover {
-            background: #e9ecef;
-            border-color: #adb5bd;
-        }
-
-        .tool-button.active {
-            background: #007bff;
-            color: white;
-            border-color: #0056b3;
-        }
-
-        .tool-button i {
-            font-size: 14px;
-        }
-
-        .color-picker {
-            width: 30px;
-            height: 30px;
-            padding: 2px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            background-color: white;
-        }
-
-        .color-picker::-webkit-color-swatch {
-            border: none;
-            border-radius: 2px;
-            padding: 0;
-        }
-
-        .color-picker::-webkit-color-swatch-wrapper {
-            border: none;
-            border-radius: 2px;
-            padding: 0;
-        }
-
-        .font-size-selector {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: white;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        /* Estilos para tablas */
-        .rubrica-tabla {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-
-        .rubrica-tabla th,
-        .rubrica-tabla td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        .rubrica-tabla th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .rubrica-tabla tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .rubrica-tabla tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        /* Diálogo de medios */
-        .media-dialog {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-            width: 90%;
-            max-width: 600px;
-            min-height: 200px;
-        }
-
-        .media-dialog-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
-
-        .media-preview-container {
-            margin: 15px 0;
-            text-align: center;
-        }
-
-        .media-preview-container img,
-        .media-preview-container video {
-            max-width: 100%;
-            max-height: 400px;
-            margin: auto;
-        }
-
-        .media-preview-container audio {
-            width: 100%;
-        }
-
-        .dialog-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 15px;
-        }
-
-        /* Botones principales */
-        .buttons-container {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        .button {
-            background: linear-gradient(to bottom, #007bff, #0056b3);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            min-width: 200px;
-            transition: all 0.2s ease;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-        }
-
-        #clearButton {
-            background: linear-gradient(to bottom, #dc3545, #bd2130);
-        }
-
-        #printButton {
-            background: linear-gradient(to bottom, #28a745, #1e7e34);
-        }
-
-        #downloadButton {
-            background: linear-gradient(to bottom, #007bff, #0056b3);
-        }
-
-        /* Área de previsualización */
-        .preview-content {
-            margin: 20px auto;
-            padding: 40px;
-            background: white;
-            border-radius: 8px;
-            display: none;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        #contenidoRubrica {
-            min-height: 200px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-top: 20px;
-            outline: none;
-        }
-
-        #contenidoRubrica:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-        }
-
-        /* Grabación */
-        .recording {
-            animation: pulse 1.5s infinite;
-            background: #dc3545 !important;
-            color: white !important;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        /* Estilos para fórmulas matemáticas */
-        .math-formula {
-            margin: 1em 0;
-            overflow-x: auto;
-            max-width: 100%;
-            padding: 10px 0;
-        }
-
-        .MathJax {
-            font-size: 110% !important;
-        }
-
-        /* Estilos de impresión */
-        @media print {
-            .no-print {
-                display: none !important;
-            }
-
-            .preview-content {
-                display: block !important;
-                padding: 20px;
-                margin: 0;
-                width: 100%;
-                border-radius: 0;
-            }
-
-            .rubrica-tabla {
-                page-break-inside: avoid;
-            }
-
-            .rubrica-tabla th,
-            .rubrica-tabla td {
-                border-color: #000;
-            }
-
-            .MathJax {
-                page-break-inside: avoid;
-            }
-
-            * { 
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-        }
-
-        /* Responsive */
-        @media screen and (max-width: 768px) {
-            .container {
-                width: 95%;
-                padding: 15px;
-            }
-
-            .buttons-container {
-                flex-direction: column;
-            }
-
-            .button {
-                width: 100%;
-            }
-
-            .editor-toolbar {
-                flex-direction: column;
-            }
-
-            .toolbar-group {
-                border-right: none;
-                border-bottom: 1px solid #ddd;
-                padding-bottom: 10px;
-                width: 100%;
-                justify-content: center;
-            }
-        }
-      .custom-dialog-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            backdrop-filter: blur(3px);
-        }
-
-        .custom-dialog {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        .custom-dialog h3 {
-            margin-top: 0;
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-
-        .custom-dialog-content {
-            margin-bottom: 20px;
-        }
-
-        .custom-dialog input[type="text"],
-        .custom-dialog input[type="url"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .custom-dialog input[type="text"]:focus,
-        .custom-dialog input[type="url"]:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-        }
-
-        .dialog-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .dialog-button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .dialog-button-primary {
-            background: #007bff;
-            color: white;
-        }
-
-        .dialog-button-primary:hover {
-            background: #0056b3;
-        }
-
-        .dialog-button-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .dialog-button-secondary:hover {
-            background: #545b62;
-        }
-
-        .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: -10px;
-            margin-bottom: 10px;
-            display: none;
-        }
-      
-   /* Estilos para los diálogos de grabación */
-.recording-dialog {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    z-index: 1001;
-    width: 90%;
-    max-width: 500px;
-}
-
-.recording-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
-    z-index: 1000;
-}
-
-.recording-content {
-    text-align: center;
-}
-
-.recording-preview {
-    margin: 20px 0;
-    width: 100%;
-    min-height: 200px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.recording-preview video {
-    max-width: 100%;
-    max-height: 300px;
-}
-
-.recording-preview audio {
-    width: 100%;
-    margin: 10px;
-}
-
-.recording-timer {
-    font-size: 24px;
-    font-weight: bold;
-    color: #dc3545;
-    margin: 15px 0;
-    font-family: monospace;
-}
-
-.recording-controls {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-.recording-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-}
-
-.record-button {
-    background: #dc3545;
-    color: white;
-}
-
-.record-button:hover {
-    background: #c82333;
-}
-
-.record-button.recording {
-    animation: pulse 1.5s infinite;
-}
-
-.stop-button {
-    background: #6c757d;
-    color: white;
-}
-
-.stop-button:hover {
-    background: #5a6268;
-}
-
-.save-button {
-    background: #28a745;
-    color: white;
-}
-
-.save-button:hover {
-    background: #218838;
-}
-
-.cancel-button {
-    background: #6c757d;
-    color: white;
-}
-
-.cancel-button:hover {
-    background: #5a6268;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-.recording-status {
-    font-size: 14px;
-    margin: 10px 0;
-    color: #6c757d;
-}
-
-.recording-error {
-    color: #dc3545;
-    margin: 10px 0;
-    font-size: 14px;
-    display: none;
-}
-      
-      /* Estilos para elementos seleccionados */
-.media-selected {
-    outline: 2px solid #007bff;
-    border-radius: 4px;
-}
-
-/* Estilos para el contenedor de medios */
-.media-container {
-    display: inline-block;
-    margin: 10px;
-    transition: all 0.3s ease;
-}
-
-.media-container.align-left {
-    float: left;
-    margin-right: 20px;
-}
-
-.media-container.align-center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-}
-
-.media-container.align-right {
-    float: right;
-    margin-left: 20px;
-}
-
-/* Estilos para el botón de redimensionar */
-.resize-handle {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: #007bff;
-    border-radius: 50%;
-    cursor: se-resize;
-    display: none;
-}
-      .saved-edit-item {
-    background: white;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    transition: background-color 0.2s;
-}
-
-.saved-edit-item:hover {
-    background: #f8f9fa;
-}
-
-.saved-edit-item button {
-    margin-right: 8px;
-}
-
-/* Estilo para el botón de autoguardado cuando está activo */
-.autosave-active {
-    background-color: #28a745 !important;
-    color: white !important;
-}
-
-/* Indicador de autoguardado */
-.autosave-indicator {
-    font-size: 12px;
-    color: #6c757d;
-    margin-left: 10px;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.autosave-indicator.visible {
-    opacity: 1;
-}
-</style>
-<style type="text/css">
-
-</style>
-<script>
-
-</script>
-<style type="text/css">.CtxtMenu_InfoClose {  top:.2em; right:.2em;}
-.CtxtMenu_InfoContent {  overflow:auto; text-align:left; font-size:80%;  padding:.4em .6em; border:1px inset; margin:1em 0px;  max-height:20em; max-width:30em; background-color:#EEEEEE;  white-space:normal;}
-.CtxtMenu_Info.CtxtMenu_MousePost {outline:none;}
-.CtxtMenu_Info {  position:fixed; left:50%; width:auto; text-align:center;  border:3px outset; padding:1em 2em; background-color:#DDDDDD;  color:black;  cursor:default; font-family:message-box; font-size:120%;  font-style:normal; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 15px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius:15px;               /* Safari and Chrome */  -moz-border-radius:15px;                  /* Firefox */  -khtml-border-radius:15px;                /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color="gray", Positive="true"); /* IE */}
-</style><style type="text/css">.CtxtMenu_MenuClose {  position:absolute;  cursor:pointer;  display:inline-block;  border:2px solid #AAA;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  font-family: "Courier New", Courier;  font-size:24px;  color:#F0F0F0}
-.CtxtMenu_MenuClose span {  display:block; background-color:#AAA; border:1.5px solid;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  line-height:0;  padding:8px 0 6px     /* may need to be browser-specific */}
-.CtxtMenu_MenuClose:hover {  color:white!important;  border:2px solid #CCC!important}
-.CtxtMenu_MenuClose:hover span {  background-color:#CCC!important}
-.CtxtMenu_MenuClose:hover:focus {  outline:none}
-</style><style type="text/css">.CtxtMenu_Menu {  position:absolute;  background-color:white;  color:black;  width:auto; padding:5px 0px;  border:1px solid #CCCCCC; margin:0; cursor:default;  font: menu; text-align:left; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 5px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius: 5px;             /* Safari and Chrome */  -moz-border-radius: 5px;                /* Firefox */  -khtml-border-radius: 5px;              /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */}
-.CtxtMenu_MenuItem {  padding: 1px 2em;  background:transparent;}
-.CtxtMenu_MenuArrow {  position:absolute; right:.5em; padding-top:.25em; color:#666666;  font-family: null; font-size: .75em}
-.CtxtMenu_MenuActive .CtxtMenu_MenuArrow {color:white}
-.CtxtMenu_MenuArrow.CtxtMenu_RTL {left:.5em; right:auto}
-.CtxtMenu_MenuCheck {  position:absolute; left:.7em;  font-family: null}
-.CtxtMenu_MenuCheck.CtxtMenu_RTL { right:.7em; left:auto }
-.CtxtMenu_MenuRadioCheck {  position:absolute; left: .7em;}
-.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL {  right: .7em; left:auto}
-.CtxtMenu_MenuInputBox {  padding-left: 1em; right:.5em; color:#666666;  font-family: null;}
-.CtxtMenu_MenuInputBox.CtxtMenu_RTL {  left: .1em;}
-.CtxtMenu_MenuComboBox {  left:.1em; padding-bottom:.5em;}
-.CtxtMenu_MenuSlider {  left: .1em;}
-.CtxtMenu_SliderValue {  position:absolute; right:.1em; padding-top:.25em; color:#333333;  font-size: .75em}
-.CtxtMenu_SliderBar {  outline: none; background: #d3d3d3}
-.CtxtMenu_MenuLabel {  padding: 1px 2em 3px 1.33em;  font-style:italic}
-.CtxtMenu_MenuRule {  border-top: 1px solid #DDDDDD;  margin: 4px 3px;}
-.CtxtMenu_MenuDisabled {  color:GrayText}
-.CtxtMenu_MenuActive {  background-color: #606872;  color: white;}
-.CtxtMenu_MenuDisabled:focus {  background-color: #E8E8E8}
-.CtxtMenu_MenuLabel:focus {  background-color: #E8E8E8}
-.CtxtMenu_ContextMenu:focus {  outline:none}
-.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus {  outline:none}
-.CtxtMenu_SelectionMenu {  position:relative; float:left;  border-bottom: none; -webkit-box-shadow:none; -webkit-border-radius:0px; }
-.CtxtMenu_SelectionItem {  padding-right: 1em;}
-.CtxtMenu_Selection {  right: 40%; width:50%; }
-.CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
-.CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
-.CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
-</style><style id="MJX-CHTML-styles">
-mjx-container[jax="CHTML"] {
-  line-height: 0;
-}
-
-mjx-container [space="1"] {
-  margin-left: .111em;
-}
-
-mjx-container [space="2"] {
-  margin-left: .167em;
-}
-
-mjx-container [space="3"] {
-  margin-left: .222em;
-}
-
-mjx-container [space="4"] {
-  margin-left: .278em;
-}
-
-mjx-container [space="5"] {
-  margin-left: .333em;
-}
-
-mjx-container [rspace="1"] {
-  margin-right: .111em;
-}
-
-mjx-container [rspace="2"] {
-  margin-right: .167em;
-}
-
-mjx-container [rspace="3"] {
-  margin-right: .222em;
-}
-
-mjx-container [rspace="4"] {
-  margin-right: .278em;
-}
-
-mjx-container [rspace="5"] {
-  margin-right: .333em;
-}
-
-mjx-container [size="s"] {
-  font-size: 70.7%;
-}
-
-mjx-container [size="ss"] {
-  font-size: 50%;
-}
-
-mjx-container [size="Tn"] {
-  font-size: 60%;
-}
-
-mjx-container [size="sm"] {
-  font-size: 85%;
-}
-
-mjx-container [size="lg"] {
-  font-size: 120%;
-}
-
-mjx-container [size="Lg"] {
-  font-size: 144%;
-}
-
-mjx-container [size="LG"] {
-  font-size: 173%;
-}
-
-mjx-container [size="hg"] {
-  font-size: 207%;
-}
-
-mjx-container [size="HG"] {
-  font-size: 249%;
-}
-
-mjx-container [width="full"] {
-  width: 100%;
-}
-
-mjx-box {
-  display: inline-block;
-}
-
-mjx-block {
-  display: block;
-}
-
-mjx-itable {
-  display: inline-table;
-}
-
-mjx-row {
-  display: table-row;
-}
-
-mjx-row > * {
-  display: table-cell;
-}
-
-mjx-mtext {
-  display: inline-block;
-}
-
-mjx-mstyle {
-  display: inline-block;
-}
-
-mjx-merror {
-  display: inline-block;
-  color: red;
-  background-color: yellow;
-}
-
-mjx-mphantom {
-  visibility: hidden;
-}
-
-_::-webkit-full-page-media, _:future, :root mjx-container {
-  will-change: opacity;
-}
-
-mjx-assistive-mml {
-  position: absolute !important;
-  top: 0px;
-  left: 0px;
-  clip: rect(1px, 1px, 1px, 1px);
-  padding: 1px 0px 0px 0px !important;
-  border: 0px !important;
-  display: block !important;
-  width: auto !important;
-  overflow: hidden !important;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-mjx-assistive-mml[display="block"] {
-  width: 100% !important;
-}
-
-mjx-c::before {
-  display: block;
-  width: 0;
-}
-
-.MJX-TEX {
-  font-family: MJXZERO, MJXTEX;
-}
-
-.TEX-B {
-  font-family: MJXZERO, MJXTEX-B;
-}
-
-.TEX-I {
-  font-family: MJXZERO, MJXTEX-I;
-}
-
-.TEX-MI {
-  font-family: MJXZERO, MJXTEX-MI;
-}
-
-.TEX-BI {
-  font-family: MJXZERO, MJXTEX-BI;
-}
-
-.TEX-S1 {
-  font-family: MJXZERO, MJXTEX-S1;
-}
-
-.TEX-S2 {
-  font-family: MJXZERO, MJXTEX-S2;
-}
-
-.TEX-S3 {
-  font-family: MJXZERO, MJXTEX-S3;
-}
-
-.TEX-S4 {
-  font-family: MJXZERO, MJXTEX-S4;
-}
-
-.TEX-A {
-  font-family: MJXZERO, MJXTEX-A;
-}
-
-.TEX-C {
-  font-family: MJXZERO, MJXTEX-C;
-}
-
-.TEX-CB {
-  font-family: MJXZERO, MJXTEX-CB;
-}
-
-.TEX-FR {
-  font-family: MJXZERO, MJXTEX-FR;
-}
-
-.TEX-FRB {
-  font-family: MJXZERO, MJXTEX-FRB;
-}
-
-.TEX-SS {
-  font-family: MJXZERO, MJXTEX-SS;
-}
-
-.TEX-SSB {
-  font-family: MJXZERO, MJXTEX-SSB;
-}
-
-.TEX-SSI {
-  font-family: MJXZERO, MJXTEX-SSI;
-}
-
-.TEX-SC {
-  font-family: MJXZERO, MJXTEX-SC;
-}
-
-.TEX-T {
-  font-family: MJXZERO, MJXTEX-T;
-}
-
-.TEX-V {
-  font-family: MJXZERO, MJXTEX-V;
-}
-
-.TEX-VB {
-  font-family: MJXZERO, MJXTEX-VB;
-}
-
-mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
-  font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A ! important;
-}
-
-@font-face /* 0 */ {
-  font-family: MJXZERO;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff") format("woff");
-}
-
-@font-face /* 1 */ {
-  font-family: MJXTEX;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");
-}
-
-@font-face /* 2 */ {
-  font-family: MJXTEX-B;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Bold.woff") format("woff");
-}
-
-@font-face /* 3 */ {
-  font-family: MJXTEX-I;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");
-}
-
-@font-face /* 4 */ {
-  font-family: MJXTEX-MI;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Italic.woff") format("woff");
-}
-
-@font-face /* 5 */ {
-  font-family: MJXTEX-BI;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-BoldItalic.woff") format("woff");
-}
-
-@font-face /* 6 */ {
-  font-family: MJXTEX-S1;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size1-Regular.woff") format("woff");
-}
-
-@font-face /* 7 */ {
-  font-family: MJXTEX-S2;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff") format("woff");
-}
-
-@font-face /* 8 */ {
-  font-family: MJXTEX-S3;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size3-Regular.woff") format("woff");
-}
-
-@font-face /* 9 */ {
-  font-family: MJXTEX-S4;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size4-Regular.woff") format("woff");
-}
-
-@font-face /* 10 */ {
-  font-family: MJXTEX-A;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_AMS-Regular.woff") format("woff");
-}
-
-@font-face /* 11 */ {
-  font-family: MJXTEX-C;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Regular.woff") format("woff");
-}
-
-@font-face /* 12 */ {
-  font-family: MJXTEX-CB;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Bold.woff") format("woff");
-}
-
-@font-face /* 13 */ {
-  font-family: MJXTEX-FR;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Regular.woff") format("woff");
-}
-
-@font-face /* 14 */ {
-  font-family: MJXTEX-FRB;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Bold.woff") format("woff");
-}
-
-@font-face /* 15 */ {
-  font-family: MJXTEX-SS;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Regular.woff") format("woff");
-}
-
-@font-face /* 16 */ {
-  font-family: MJXTEX-SSB;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Bold.woff") format("woff");
-}
-
-@font-face /* 17 */ {
-  font-family: MJXTEX-SSI;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Italic.woff") format("woff");
-}
-
-@font-face /* 18 */ {
-  font-family: MJXTEX-SC;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Script-Regular.woff") format("woff");
-}
-
-@font-face /* 19 */ {
-  font-family: MJXTEX-T;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff") format("woff");
-}
-
-@font-face /* 20 */ {
-  font-family: MJXTEX-V;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Regular.woff") format("woff");
-}
-
-@font-face /* 21 */ {
-  font-family: MJXTEX-VB;
-  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Bold.woff") format("woff");
-}
-</style></head>
-  <body>
+    </style>
+</head>
+<body>
     <div class="container">
         <div class="logo-container no-print">
             <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford" id="headerLogo">
@@ -1141,258 +114,520 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
         <h1 class="no-print">Editá - Imprimí - Descargá</h1>
         
         <textarea id="rubricaInput" class="no-print" placeholder="Pegá aquí el texto generado por la IA..."></textarea>
-        
-        <div class="buttons-container no-print">
-           
-            <button class="button" id="printButton" onclick="imprimirContenido()">Imprimir</button>
-            <button class="button" id="downloadButton" onclick="descargarContenido()">Descargar</button>
-            <button class="button" id="clearButton" onclick="borrarContenido()">Borrar</button>
-        </div>
-        
-        <!-- Barra de herramientas -->
-        <div class="editor-toolbar no-print">
-            <div class="toolbar-group">
-                <button class="tool-button" onclick="formatText('bold')" title="Negrita">
-                    <i class="fas fa-bold"></i>
-                </button>
-                <button class="tool-button" onclick="formatText('italic')" title="Cursiva">
-                    <i class="fas fa-italic"></i>
-                </button>
-                <button class="tool-button" onclick="formatText('underline')" title="Subrayado">
-                    <i class="fas fa-underline"></i>
-                </button>
-            </div>
-            <div class="toolbar-group">
-                <input type="color" class="color-picker" onchange="changeColor(this.value)" title="Color de texto">
-            </div>
-          <div class="toolbar-group">
-    <input type="color" class="color-picker" id="highlightColorPicker" value="#ffff00" title="Color de resaltado">
-    <button class="tool-button" onclick="applyHighlight()" title="Resaltar">
-        <i class="fas fa-highlighter"></i>
+      <style>
+    /* Estilos de la barra de herramientas */
+    .editor-toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(248, 249, 250, 0.95);
+        backdrop-filter: blur(8px);
+        padding: 10px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: box-shadow 0.3s ease;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .editor-toolbar.sticky {
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .toolbar-group {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        padding-right: 10px;
+        border-right: 1px solid #ddd;
+    }
+
+    .toolbar-group:last-child {
+        border-right: none;
+    }
+
+    .tool-button {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 6px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .tool-button:hover {
+        background: #e9ecef;
+        border-color: #adb5bd;
+    }
+
+    .tool-button.active {
+        background: #007bff;
+        color: white;
+        border-color: #0056b3;
+    }
+
+    .tool-button i {
+        font-size: 14px;
+    }
+
+    .color-picker {
+        width: 30px;
+        height: 30px;
+        padding: 2px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: white;
+    }
+
+    .color-picker::-webkit-color-swatch {
+        border: none;
+        border-radius: 2px;
+        padding: 0;
+    }
+
+    .color-picker::-webkit-color-swatch-wrapper {
+        border: none;
+        border-radius: 2px;
+        padding: 0;
+    }
+
+    .font-size-selector {
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    /* Botones principales */
+    .buttons-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .button {
+        background: linear-gradient(to bottom, #007bff, #0056b3);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        min-width: 200px;
+        transition: all 0.2s ease;
+    }
+
+    .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    #clearButton {
+        background: linear-gradient(to bottom, #dc3545, #bd2130);
+    }
+
+    #printButton {
+        background: linear-gradient(to bottom, #28a745, #1e7e34);
+    }
+
+    #downloadButton {
+        background: linear-gradient(to bottom, #007bff, #0056b3);
+    }
+
+    /* Área de previsualización */
+    .preview-content {
+        margin: 20px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 8px;
+        display: none;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #contenidoRubrica {
+        min-height: 200px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-top: 20px;
+        outline: none;
+    }
+
+    #contenidoRubrica:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    /* Grabación */
+    .recording {
+        animation: pulse 1.5s infinite;
+        background: #dc3545 !important;
+        color: white !important;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+</style>
+
+<div class="buttons-container no-print">
+    <button class="button" id="printButton" onclick="imprimirContenido()">
+        <i class="fas fa-print"></i> Imprimir
+    </button>
+    <button class="button" id="downloadButton" onclick="descargarContenido()">
+        <i class="fas fa-download"></i> Descargar
+    </button>
+    <button class="button" id="clearButton" onclick="borrarContenido()">
+        <i class="fas fa-trash"></i> Borrar
     </button>
 </div>
-            <div class="toolbar-group">
-                <button class="tool-button" onclick="formatText('justifyLeft')" title="Alinear a la izquierda">
-                    <i class="fas fa-align-left"></i>
-                </button>
-                <button class="tool-button" onclick="formatText('justifyCenter')" title="Centrar">
-                    <i class="fas fa-align-center"></i>
-                </button>
-                <button class="tool-button" onclick="formatText('justifyRight')" title="Alinear a la derecha">
-                    <i class="fas fa-align-right"></i>
-                </button>
-                <button class="tool-button" onclick="formatText('justifyFull')" title="Justificar">
-                    <i class="fas fa-align-justify"></i>
-                </button>
-            </div>
-            
-            <div class="toolbar-group">
-                <button class="tool-button" onclick="insertLink()" title="Insertar enlace">
-                    <i class="fas fa-link"></i>
-                </button>
-                <button class="tool-button" onclick="insertImage()" title="Insertar imagen">
-                    <i class="fas fa-image"></i>
-                </button>
-                <button class="tool-button" onclick="insertVideo()" title="Insertar video">
-                    <i class="fas fa-video"></i>
-                </button>
-            </div>
-          
-          <div class="toolbar-group media-tools" style="display: none;">
-    <button class="tool-button" onclick="adjustMediaSize('decrease')" title="Reducir tamaño">
-        <i class="fas fa-compress-arrows-alt"></i>
-    </button>
-    <button class="tool-button" onclick="adjustMediaSize('increase')" title="Aumentar tamaño">
-        <i class="fas fa-expand-arrows-alt"></i>
-    </button>
-    <button class="tool-button" onclick="alignMedia('left')" title="Alinear a la izquierda">
-        <i class="fas fa-align-left"></i>
-    </button>
-    <button class="tool-button" onclick="alignMedia('center')" title="Centrar">
-        <i class="fas fa-align-center"></i>
-    </button>
-    <button class="tool-button" onclick="alignMedia('right')" title="Alinear a la derecha">
-        <i class="fas fa-align-right"></i>
-    </button>
-</div>
-          
-            <div class="toolbar-group">
-                <button class="tool-button" onclick="formatText('insertUnorderedList')" title="Lista con viñetas">
-                    <i class="fas fa-list-ul"></i>
-                </button>
-                <button class="tool-button" onclick="formatText('insertOrderedList')" title="Lista numerada">
-                    <i class="fas fa-list-ol"></i>
-                </button>
-            </div>
-            <div class="toolbar-group">
-                <button class="tool-button" onclick="formatText('indent')" title="Aumentar sangría">
-                    <i class="fas fa-indent"></i>
-                </button>
-                <button class="tool-button" onclick="formatText('outdent')" title="Disminuir sangría">
-                    <i class="fas fa-outdent"></i>
-                </button>
-            </div>
-            <div class="toolbar-group">
-                <select class="font-size-selector" onchange="changeFontSize(this.value)" title="Tamaño de fuente">
-                    <option value="">Tamaño de texto</option>
-                    <option value="1">Muy pequeño</option>
-                    <option value="2">Pequeño</option>
-                    <option value="3">Normal</option>
-                    <option value="4">Grande</option>
-                    <option value="5">Más grande</option>
-                    <option value="6">Muy grande</option>
-                    <option value="7">Máximo</option>
-                </select>
-            </div>
-          <div class="toolbar-group">
-    <button class="tool-button" onclick="insertH5P()" title="Insertar H5P">
-        <i class="fas fa-puzzle-piece"></i>
-    </button>
-</div>
-          
-          
-          
-            <div class="toolbar-group">
-                <button class="tool-button" onclick="showRecordingDialog('audio')" id="audioRecordButton" title="Grabar audio">
-    <i class="fas fa-microphone"></i>
-</button>
-<button class="tool-button" onclick="showRecordingDialog('video')" id="videoRecordButton" title="Grabar video">
-    <i class="fas fa-camera"></i>
-</button>
-            </div>
-        </div>
-
-        <!-- Contenido de previsualización -->
-        <div id="preview" class="preview-content">
-            <div class="logo-container1">
-                <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
-            </div>
-            
-            <div id="contenidoRubrica" contenteditable="true"></div>
-        </div>
-
-        <!-- Diálogo para vista previa de medios -->
-        <div id="mediaDialogOverlay" class="media-dialog-overlay"></div>
-        <div id="mediaDialog" class="media-dialog">
-            <h3>Vista previa</h3>
-            <div id="mediaPreviewContainer" class="media-preview-container"></div>
-            <div class="dialog-buttons">
-                <button class="button" onclick="insertCurrentMedia()">Insertar</button>
-                <button class="button" onclick="closeMediaDialog()">Cancelar</button>
-            </div>
-        </div>
-      
-       <div id="linkDialogOverlay" class="custom-dialog-overlay"></div>
-    <div id="linkDialog" class="custom-dialog">
-        <h3>Insertar enlace</h3>
-        <div class="custom-dialog-content">
-            <input type="url" id="linkUrl" placeholder="Ingresa la URL del enlace">
-            <div id="linkUrlError" class="error-message">Por favor, ingresa una URL válida</div>
-            <input type="text" id="linkText" placeholder="Texto para mostrar">
-        </div>
-        <div class="dialog-buttons">
-            <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('linkDialog')">Cancelar</button>
-            <button class="dialog-button dialog-button-primary" onclick="insertCustomLink()">Insertar</button>
-        </div>
+      <!-- Barra de herramientas -->
+<div class="editor-toolbar no-print">
+    <div class="toolbar-group">
+        <!-- Formato de Texto Básico -->
+        <button class="tool-button" onclick="formatText('bold')" title="Negrita">
+            <i class="fas fa-bold"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('italic')" title="Cursiva">
+            <i class="fas fa-italic"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('underline')" title="Subrayado">
+            <i class="fas fa-underline"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('strikethrough')" title="Tachado">
+            <i class="fas fa-strikethrough"></i>
+        </button>
     </div>
 
-    <!-- Diálogo para imágenes -->
-    <div id="imageDialogOverlay" class="custom-dialog-overlay"></div>
-    <div id="imageDialog" class="custom-dialog">
-        <h3>Insertar imagen</h3>
-        <div class="custom-dialog-content">
-            <input type="url" id="imageUrl" placeholder="Ingresa la URL de la imagen">
-            <div id="imageUrlError" class="error-message">Por favor, ingresa una URL válida</div>
-        </div>
-        <div class="dialog-buttons">
-            <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('imageDialog')">Cancelar</button>
-            <button class="dialog-button dialog-button-primary" onclick="insertCustomImage()">Insertar</button>
-        </div>
+    <div class="toolbar-group">
+        <!-- Color de Texto y Resaltado -->
+        <input type="color" class="color-picker" onchange="changeColor(this.value)" title="Color de texto">
+        <input type="color" class="color-picker" id="highlightColorPicker" value="#ffff00" title="Color de resaltado">
+        <button class="tool-button" onclick="applyHighlight()" title="Resaltar">
+            <i class="fas fa-highlighter"></i>
+        </button>
     </div>
 
-    <!-- Diálogo para videos -->
-    <div id="videoDialogOverlay" class="custom-dialog-overlay"></div>
-    <div id="videoDialog" class="custom-dialog">
-        <h3>Insertar video</h3>
-        <div class="custom-dialog-content">
-            <input type="url" id="videoUrl" placeholder="Ingresa la URL del video (YouTube o URL directa)">
-            <div id="videoUrlError" class="error-message">Por favor, ingresa una URL válida</div>
-        </div>
-        <div class="dialog-buttons">
-            <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('videoDialog')">Cancelar</button>
-            <button class="dialog-button dialog-button-primary" onclick="insertCustomVideo()">Insertar</button>
-        </div>
+    <div class="toolbar-group">
+        <!-- Alineación de Texto -->
+        <button class="tool-button" onclick="formatText('justifyLeft')" title="Alinear a la izquierda">
+            <i class="fas fa-align-left"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('justifyCenter')" title="Centrar">
+            <i class="fas fa-align-center"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('justifyRight')" title="Alinear a la derecha">
+            <i class="fas fa-align-right"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('justifyFull')" title="Justificar">
+            <i class="fas fa-align-justify"></i>
+        </button>
     </div>
 
-    <!-- Diálogo para H5P -->
-    <div id="h5pDialogOverlay" class="custom-dialog-overlay"></div>
-    <div id="h5pDialog" class="custom-dialog">
-        <h3>Insertar contenido H5P</h3>
-        <div class="custom-dialog-content">
-            <input type="url" id="h5pUrl" placeholder="Ingresa la URL del contenido H5P">
-            <div id="h5pUrlError" class="error-message">Por favor, ingresa una URL válida</div>
-        </div>
-        <div class="dialog-buttons">
-            <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('h5pDialog')">Cancelar</button>
-            <button class="dialog-button dialog-button-primary" onclick="insertCustomH5P()">Insertar</button>
-        </div>
+    <div class="toolbar-group">
+        <!-- Herramientas de Inserción -->
+        <button class="tool-button" onclick="insertLink()" title="Insertar enlace">
+            <i class="fas fa-link"></i>
+        </button>
+        <button class="tool-button" onclick="insertImage()" title="Insertar imagen">
+            <i class="fas fa-image"></i>
+        </button>
+        <button class="tool-button" onclick="insertVideo()" title="Insertar video">
+            <i class="fas fa-video"></i>
+        </button>
+        <button class="tool-button" onclick="insertIframe()" title="Insertar iframe">
+            <i class="fas fa-code"></i>
+        </button>
     </div>
-<div id="audioRecordingOverlay" class="recording-overlay"></div>
-<div id="audioRecordingDialog" class="recording-dialog">
-    <h3>Grabar Audio</h3>
-    <div class="recording-content">
-        <div class="recording-preview">
-            <audio id="audioPreview" controls></audio>
-        </div>
-        <div class="recording-timer" id="audioTimer">00:00</div>
-        <div class="recording-status" id="audioStatus">Listo para grabar</div>
-        <div class="recording-error" id="audioError"></div>
-        <div class="recording-controls">
-            <button class="recording-button record-button" id="startAudioRecord">
-                <i class="fas fa-microphone"></i> Grabar
-            </button>
-            <button class="recording-button stop-button" id="stopAudioRecord" style="display:none">
-                <i class="fas fa-stop"></i> Detener
-            </button>
-            <button class="recording-button save-button" id="saveAudioRecord" style="display:none">
-                <i class="fas fa-save"></i> Guardar
-            </button>
-            <button class="recording-button cancel-button" id="cancelAudioRecord">
-                <i class="fas fa-times"></i> Cancelar
-            </button>
-        </div>
+
+    <div class="toolbar-group media-tools" style="display: none;">
+        <!-- Ajuste de Tamaño de Medios -->
+        <button class="tool-button" onclick="adjustMediaSize('decrease')" title="Reducir tamaño">
+            <i class="fas fa-compress-arrows-alt"></i>
+        </button>
+        <button class="tool-button" onclick="adjustMediaSize('increase')" title="Aumentar tamaño">
+            <i class="fas fa-expand-arrows-alt"></i>
+        </button>
+        <button class="tool-button" onclick="alignMedia('left')" title="Alinear a la izquierda">
+            <i class="fas fa-align-left"></i>
+        </button>
+        <button class="tool-button" onclick="alignMedia('center')" title="Centrar">
+            <i class="fas fa-align-center"></i>
+        </button>
+        <button class="tool-button" onclick="alignMedia('right')" title="Alinear a la derecha">
+            <i class="fas fa-align-right"></i>
+        </button>
+    </div>
+
+    <div class="toolbar-group">
+        <!-- Listas y Sangría -->
+        <button class="tool-button" onclick="formatText('insertUnorderedList')" title="Lista con viñetas">
+            <i class="fas fa-list-ul"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('insertOrderedList')" title="Lista numerada">
+            <i class="fas fa-list-ol"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('indent')" title="Aumentar sangría">
+            <i class="fas fa-indent"></i>
+        </button>
+        <button class="tool-button" onclick="formatText('outdent')" title="Disminuir sangría">
+            <i class="fas fa-outdent"></i>
+        </button>
+    </div>
+
+    <div class="toolbar-group">
+        <!-- Tamaño de Fuente -->
+        <select class="font-size-selector" onchange="changeFontSize(this.value)" title="Tamaño de fuente">
+            <option value="">Tamaño de texto</option>
+            <option value="1">Muy pequeño</option>
+            <option value="2">Pequeño</option>
+            <option value="3">Normal</option>
+            <option value="4">Grande</option>
+            <option value="5">Más grande</option>
+            <option value="6">Muy grande</option>
+            <option value="7">Máximo</option>
+        </select>
+    </div>
+
+    <div class="toolbar-group">
+        <!-- Grabación de Audio y Video -->
+        <button class="tool-button" onclick="showRecordingDialog('audio')" id="audioRecordButton" title="Grabar audio">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <button class="tool-button" onclick="showRecordingDialog('video')" id="videoRecordButton" title="Grabar video">
+            <i class="fas fa-camera"></i>
+        </button>
     </div>
 </div>
 
-<!-- Diálogo para grabación de video -->
-<div id="videoRecordingOverlay" class="recording-overlay"></div>
-<div id="videoRecordingDialog" class="recording-dialog">
-    <h3>Grabar Video</h3>
-    <div class="recording-content">
-        <div class="recording-preview">
-            <video id="videoPreview" autoplay muted playsinline></video>
-        </div>
-        <div class="recording-timer" id="videoTimer">00:00</div>
-        <div class="recording-status" id="videoStatus">Listo para grabar</div>
-        <div class="recording-error" id="videoError"></div>
-        <div class="recording-controls">
-            <button class="recording-button record-button" id="startVideoRecord">
-                <i class="fas fa-video"></i> Grabar
-            </button>
-            <button class="recording-button stop-button" id="stopVideoRecord" style="display:none">
-                <i class="fas fa-stop"></i> Detener
-            </button>
-            <button class="recording-button save-button" id="saveVideoRecord" style="display:none">
-                <i class="fas fa-save"></i> Guardar
-            </button>
-            <button class="recording-button cancel-button" id="cancelVideoRecord">
-                <i class="fas fa-times"></i> Cancelar
-            </button>
-        </div>
+<!-- Contenido de previsualización -->
+<div id="preview" class="preview-content">
+    <div class="logo-container1">
+        <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
+    </div>
+    
+    <div id="contenidoRubrica" contenteditable="true"></div>
+</div>
+      <style>
+/* Estilos para diálogos personalizados */
+.custom-dialog-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+
+.custom-dialog {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    width: 90%;
+    max-width: 500px;
+}
+
+.custom-dialog h3 {
+    margin-top: 0;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.custom-dialog-content {
+    margin-bottom: 20px;
+}
+
+.custom-dialog input[type="text"],
+.custom-dialog input[type="url"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.custom-dialog input[type="text"]:focus,
+.custom-dialog input[type="url"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    display: none;
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.dialog-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.dialog-button-primary {
+    background: #007bff;
+    color: white;
+}
+
+.dialog-button-primary:hover {
+    background: #0056b3;
+}
+
+.dialog-button-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.dialog-button-secondary:hover {
+    background: #545b62;
+}
+
+/* Estilos para el diálogo de medios */
+.media-dialog {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    min-height: 200px;
+}
+
+.media-dialog-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+
+.media-preview-container {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.media-preview-container img,
+.media-preview-container video,
+.media-preview-container iframe {
+    max-width: 100%;
+    max-height: 400px;
+    margin: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.media-preview-container audio {
+    width: 100%;
+}
+</style>
+
+<!-- Diálogo para enlaces -->
+<div id="linkDialogOverlay" class="custom-dialog-overlay"></div>
+<div id="linkDialog" class="custom-dialog">
+    <h3>Insertar enlace</h3>
+    <div class="custom-dialog-content">
+        <input type="url" id="linkUrl" placeholder="Ingresa la URL del enlace">
+        <div id="linkUrlError" class="error-message">Por favor, ingresa una URL válida</div>
+        <input type="text" id="linkText" placeholder="Texto para mostrar">
+    </div>
+    <div class="dialog-buttons">
+        <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('linkDialog')">Cancelar</button>
+        <button class="dialog-button dialog-button-primary" onclick="insertCustomLink()">Insertar</button>
     </div>
 </div>
-    <script>
-        // Parte 1: Funciones principales del editor
+
+<!-- Diálogo para imágenes -->
+<div id="imageDialogOverlay" class="custom-dialog-overlay"></div>
+<div id="imageDialog" class="custom-dialog">
+    <h3>Insertar imagen</h3>
+    <div class="custom-dialog-content">
+        <input type="url" id="imageUrl" placeholder="Ingresa la URL de la imagen">
+        <div id="imageUrlError" class="error-message">Por favor, ingresa una URL válida</div>
+    </div>
+    <div class="dialog-buttons">
+        <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('imageDialog')">Cancelar</button>
+        <button class="dialog-button dialog-button-primary" onclick="insertCustomImage()">Insertar</button>
+    </div>
+</div>
+
+<!-- Diálogo para videos -->
+<div id="videoDialogOverlay" class="custom-dialog-overlay"></div>
+<div id="videoDialog" class="custom-dialog">
+    <h3>Insertar video</h3>
+    <div class="custom-dialog-content">
+        <input type="url" id="videoUrl" placeholder="Ingresa la URL del video (YouTube o URL directa)">
+        <div id="videoUrlError" class="error-message">Por favor, ingresa una URL válida</div>
+    </div>
+    <div class="dialog-buttons">
+        <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('videoDialog')">Cancelar</button>
+        <button class="dialog-button dialog-button-primary" onclick="insertCustomVideo()">Insertar</button>
+    </div>
+</div>
+
+<!-- Diálogo para iframes -->
+<div id="iframeDialogOverlay" class="custom-dialog-overlay"></div>
+<div id="iframeDialog" class="custom-dialog">
+    <h3>Insertar iframe</h3>
+    <div class="custom-dialog-content">
+        <input type="url" id="iframeUrl" placeholder="Ingresa la URL para el iframe">
+        <input type="text" id="iframeWidth" placeholder="Ancho (ejemplo: 100% o 600px)" value="100%">
+        <input type="text" id="iframeHeight" placeholder="Alto (ejemplo: 400px)" value="400px">
+        <div id="iframeUrlError" class="error-message">Por favor, ingresa una URL válida</div>
+    </div>
+    <div class="dialog-buttons">
+        <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('iframeDialog')">Cancelar</button>
+        <button class="dialog-button dialog-button-primary" onclick="insertCustomIframe()">Insertar</button>
+    </div>
+</div>
+      <script>
+// Parte 1: Funciones principales del editor
 // Función principal de formateo de texto con soporte para fórmulas
 function formatearTexto(texto) {
     let formatoHTML = texto;
@@ -1576,6 +811,7 @@ function changeFontSize(size) {
     });
 }
 
+       
 // Función para previsualizar el contenido
 function previsualizarContenido() {
     const texto = document.getElementById('rubricaInput').value;
@@ -1682,13 +918,24 @@ function imprimirContenido() {
                 }
                 th { background-color: #f8f9fa; }
                 tr:nth-child(even) { background-color: #f9f9f9; }
+                .media-container {
+                    margin: 10px 0;
+                    max-width: 100%;
+                }
+                .media-container iframe {
+                    border: none;
+                    max-width: 100%;
+                }
+                @media print {
+                    .no-print { display: none !important; }
+                    iframe { max-height: none !important; }
+                }
             </style>
         </head>
         <body>
             <div class="logo-container1">
                 <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
             </div>
-            
             ${contenidoRubrica.innerHTML}
         </body>
         </html>
@@ -1702,6 +949,32 @@ function borrarContenido() {
     document.getElementById('rubricaInput').value = '';
     document.getElementById('contenidoRubrica').innerHTML = '';
     document.getElementById('preview').style.display = 'none';
+}
+
+// Función para validar URLs
+function validateUrl(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// Función para mostrar/cerrar diálogos personalizados
+function showCustomDialog(dialogId) {
+    document.getElementById(dialogId + 'Overlay').style.display = 'block';
+    document.getElementById(dialogId).style.display = 'block';
+    // Limpiar campos y errores
+    const inputs = document.querySelectorAll(`#${dialogId} input`);
+    inputs.forEach(input => input.value = '');
+    const errors = document.querySelectorAll(`#${dialogId} .error-message`);
+    errors.forEach(error => error.style.display = 'none');
+}
+
+function closeCustomDialog(dialogId) {
+    document.getElementById(dialogId + 'Overlay').style.display = 'none';
+    document.getElementById(dialogId).style.display = 'none';
 }
 
 // Event Listener para previsualización automática
@@ -1722,51 +995,19 @@ document.addEventListener('DOMContentLoaded', function() {
             preview.style.display = 'none';
         }
     });
+
+    // Event listener para barra de herramientas fija
+    window.addEventListener('scroll', function() {
+        const toolbar = document.querySelector('.editor-toolbar');
+        if (window.scrollY > 200) {
+            toolbar.classList.add('sticky');
+        } else {
+            toolbar.classList.remove('sticky');
+        }
+    });
 });
 
-// Event Listener para barra de herramientas fija
-window.addEventListener('scroll', function() {
-    const toolbar = document.querySelector('.editor-toolbar');
-    if (window.scrollY > 200) {
-        toolbar.classList.add('sticky');
-    } else {
-        toolbar.classList.remove('sticky');
-    }
-});
-      // Parte 2: Funciones de medios y diálogos
-
-// Variable para almacenar el elemento multimedia seleccionado actualmente
-let selectedMedia = null;
-let currentMediaUrl = '';
-let currentMediaType = '';
-
-// Función para validar URLs
-function validateUrl(url) {
-    try {
-        new URL(url);
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-// Funciones para mostrar/cerrar diálogos personalizados
-function showCustomDialog(dialogId) {
-    document.getElementById(dialogId + 'Overlay').style.display = 'block';
-    document.getElementById(dialogId).style.display = 'block';
-    // Limpiar campos y errores
-    const inputs = document.querySelectorAll(`#${dialogId} input`);
-    inputs.forEach(input => input.value = '');
-    const errors = document.querySelectorAll(`#${dialogId} .error-message`);
-    errors.forEach(error => error.style.display = 'none');
-}
-
-function closeCustomDialog(dialogId) {
-    document.getElementById(dialogId + 'Overlay').style.display = 'none';
-    document.getElementById(dialogId).style.display = 'none';
-}
-
-// Función para insertar enlaces
+// Funciones para manejo de enlaces
 function insertLink() {
     // Prevenir el diálogo predeterminado del navegador
     event.preventDefault();
@@ -1786,7 +1027,6 @@ function insertLink() {
     document.getElementById('linkUrlError').style.display = 'none';
 }
 
-// Función para insertar el enlace desde el diálogo personalizado
 function insertCustomLink() {
     const url = document.getElementById('linkUrl').value;
     const text = document.getElementById('linkText').value;
@@ -1809,21 +1049,12 @@ function insertCustomLink() {
     closeCustomDialog('linkDialog');
 }
 
-// Función para insertar imágenes
+// Funciones para manejo de imágenes
 function insertImage() {
-    // Prevenir el diálogo predeterminado del navegador
     event.preventDefault();
-    
-    // Mostrar el diálogo personalizado
-    document.getElementById('imageDialogOverlay').style.display = 'block';
-    document.getElementById('imageDialog').style.display = 'block';
-    
-    // Limpiar campos
-    document.getElementById('imageUrl').value = '';
-    document.getElementById('imageUrlError').style.display = 'none';
+    showCustomDialog('imageDialog');
 }
 
-// Función para insertar la imagen desde el diálogo personalizado
 function insertCustomImage() {
     const url = document.getElementById('imageUrl').value;
     
@@ -1846,21 +1077,12 @@ function getYouTubeVideoId(url) {
     return (match && match[7].length == 11) ? match[7] : null;
 }
 
-// Función para insertar videos
+// Funciones para manejo de videos
 function insertVideo() {
-    // Prevenir el diálogo predeterminado del navegador
     event.preventDefault();
-    
-    // Mostrar el diálogo personalizado
-    document.getElementById('videoDialogOverlay').style.display = 'block';
-    document.getElementById('videoDialog').style.display = 'block';
-    
-    // Limpiar campos
-    document.getElementById('videoUrl').value = '';
-    document.getElementById('videoUrlError').style.display = 'none';
+    showCustomDialog('videoDialog');
 }
 
-// Función para insertar el video desde el diálogo personalizado
 function insertCustomVideo() {
     const url = document.getElementById('videoUrl').value;
     
@@ -1887,37 +1109,50 @@ function insertCustomVideo() {
     closeCustomDialog('videoDialog');
 }
 
-// Función para insertar H5P
-function insertH5P() {
-    showCustomDialog('h5pDialog');
+// Funciones para manejo de iframes
+function insertIframe() {
+    event.preventDefault();
+    showCustomDialog('iframeDialog');
 }
 
-// Función para insertar contenido H5P desde el diálogo
-function insertCustomH5P() {
-    const url = document.getElementById('h5pUrl').value;
+function insertCustomIframe() {
+    const url = document.getElementById('iframeUrl').value;
+    const width = document.getElementById('iframeWidth').value;
+    const height = document.getElementById('iframeHeight').value;
     
     if (!validateUrl(url)) {
-        document.getElementById('h5pUrlError').style.display = 'block';
+        document.getElementById('iframeUrlError').style.display = 'block';
         return;
     }
 
+    // Validar dimensiones
+    const validWidth = /^(\d+)(px|%)?$/.test(width) ? width : '100%';
+    const validHeight = /^(\d+)(px|%)?$/.test(height) ? height : '400px';
+
+    const html = `<div class="media-container">
+        <iframe src="${url}" 
+                style="width: ${validWidth}; height: ${validHeight};" 
+                frameborder="0" 
+                allowfullscreen>
+        </iframe>
+    </div>`;
+
     const contentDiv = document.getElementById('contenidoRubrica');
     contentDiv.focus();
-    document.execCommand('insertHTML', false, 
-        `<iframe src="${url}" width="800" height="600" 
-        frameborder="0" allowfullscreen="true"></iframe>`);
-    closeCustomDialog('h5pDialog');
+    document.execCommand('insertHTML', false, html);
+    closeCustomDialog('iframeDialog');
 }
 
-// Funciones para manejo de elementos multimedia
+// Función para ajustar elementos multimedia seleccionados
+let selectedMedia = null;
+
 function initMediaEvents() {
     const contenidoRubrica = document.getElementById('contenidoRubrica');
     
-    // Listener para detectar clicks en imágenes y videos
     contenidoRubrica.addEventListener('click', function(e) {
         const target = e.target;
         if (target.tagName === 'IMG' || target.tagName === 'VIDEO' || 
-            (target.tagName === 'IFRAME' && target.getAttribute('src').includes('youtube'))) {
+            target.tagName === 'IFRAME') {
             
             // Deseleccionar el elemento anterior
             if (selectedMedia && selectedMedia !== target) {
@@ -1949,27 +1184,52 @@ function initMediaEvents() {
     });
 }
 
-// Función para ajustar el tamaño del elemento multimedia
+// Inicializar eventos cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initMediaEvents();
+});
+
+// Funciones de ajuste de tamaño para elementos multimedia
 function adjustMediaSize(action) {
     if (!selectedMedia) return;
     
     const container = selectedMedia.parentElement;
-    let currentWidth = selectedMedia.width || selectedMedia.offsetWidth;
-    
-    if (action === 'increase') {
-        currentWidth = Math.min(currentWidth * 1.1, container.offsetWidth);
+    let currentWidth;
+    let currentHeight;
+
+    // Obtener dimensiones actuales
+    if (selectedMedia.tagName === 'IFRAME') {
+        // Para iframes, usar el estilo directamente
+        currentWidth = parseInt(selectedMedia.style.width) || selectedMedia.offsetWidth;
+        currentHeight = parseInt(selectedMedia.style.height) || selectedMedia.offsetHeight;
     } else {
-        currentWidth = Math.max(currentWidth * 0.9, 100); // Mínimo 100px
+        currentWidth = selectedMedia.width || selectedMedia.offsetWidth;
+        currentHeight = selectedMedia.height || selectedMedia.offsetHeight;
     }
     
-    selectedMedia.style.width = `${currentWidth}px`;
+    // Calcular nuevas dimensiones
+    let newWidth, newHeight;
+    if (action === 'increase') {
+        newWidth = Math.min(currentWidth * 1.1, container.offsetWidth);
+        newHeight = currentHeight * (newWidth / currentWidth);
+    } else {
+        newWidth = Math.max(currentWidth * 0.9, 100); // Mínimo 100px
+        newHeight = currentHeight * (newWidth / currentWidth);
+    }
+    
+    // Aplicar nuevas dimensiones
     if (selectedMedia.tagName === 'IFRAME') {
-        // Mantener la proporción 16:9 para videos
-        selectedMedia.style.height = `${currentWidth * 0.5625}px`;
+        selectedMedia.style.width = `${newWidth}px`;
+        selectedMedia.style.height = `${newHeight}px`;
+    } else {
+        selectedMedia.style.width = `${newWidth}px`;
+        if (selectedMedia.tagName === 'VIDEO') {
+            selectedMedia.style.height = `${newHeight}px`;
+        }
     }
 }
 
-// Función para alinear el elemento multimedia
+// Función para alinear elementos multimedia
 function alignMedia(alignment) {
     if (!selectedMedia) return;
     
@@ -1981,40 +1241,126 @@ function alignMedia(alignment) {
     // Aplicar nueva alineación
     container.classList.add(`align-${alignment}`);
     
-    // Limpiar estilos float si es necesario
+    // Actualizar estilos del contenedor según la alineación
     if (alignment === 'center') {
         container.style.float = 'none';
+        container.style.display = 'block';
+        container.style.marginLeft = 'auto';
+        container.style.marginRight = 'auto';
+    } else {
+        container.style.float = alignment;
+        container.style.display = 'inline-block';
+        container.style.marginLeft = alignment === 'right' ? '20px' : '0';
+        container.style.marginRight = alignment === 'left' ? '20px' : '0';
     }
 }
 
-// Event listeners para cerrar diálogos y manejar tecla Escape
-document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar eventos de medios
-    initMediaEvents();
-    
-    // Event listeners para cerrar diálogos al hacer clic en el overlay
-    const overlays = document.querySelectorAll('.custom-dialog-overlay');
-    overlays.forEach(overlay => {
-        overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) {
-                const dialogId = overlay.id.replace('Overlay', '');
-                closeCustomDialog(dialogId);
-            }
+// Función para manejar el redimensionamiento con el mouse
+function initResizeHandlers() {
+    const contenidoRubrica = document.getElementById('contenidoRubrica');
+    let isResizing = false;
+    let currentResizeTarget = null;
+    let originalWidth;
+    let originalHeight;
+    let originalX;
+    let originalY;
+
+    // Agregar los manejadores de redimensionamiento a elementos multimedia
+    function addResizeHandle(element) {
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        element.parentElement.style.position = 'relative';
+        element.parentElement.appendChild(handle);
+        
+        handle.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            currentResizeTarget = element;
+            originalWidth = element.offsetWidth;
+            originalHeight = element.offsetHeight;
+            originalX = e.clientX;
+            originalY = e.clientY;
+            e.preventDefault();
         });
-    });
-    
-    // Event listeners para cerrar con la tecla Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const visibleDialog = document.querySelector('.custom-dialog[style*="display: block"]');
-            if (visibleDialog) {
-                const dialogId = visibleDialog.id;
-                closeCustomDialog(dialogId);
+    }
+
+    // Manejar el movimiento del mouse durante el redimensionamiento
+    document.addEventListener('mousemove', function(e) {
+        if (!isResizing) return;
+
+        const deltaX = e.clientX - originalX;
+        const deltaY = e.clientY - originalY;
+        const newWidth = originalWidth + deltaX;
+        const newHeight = originalHeight + deltaY;
+
+        if (currentResizeTarget && newWidth > 100) { // Mínimo 100px de ancho
+            currentResizeTarget.style.width = `${newWidth}px`;
+            
+            // Mantener proporción para videos e iframes
+            if (currentResizeTarget.tagName === 'VIDEO' || 
+                currentResizeTarget.tagName === 'IFRAME') {
+                currentResizeTarget.style.height = `${newHeight}px`;
             }
         }
     });
+
+    // Detener el redimensionamiento al soltar el mouse
+    document.addEventListener('mouseup', function() {
+        isResizing = false;
+        currentResizeTarget = null;
+    });
+
+    // Observer para agregar manejadores a nuevos elementos multimedia
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) { // Elemento NODE
+                    if (node.matches('img, video, iframe')) {
+                        addResizeHandle(node);
+                    } else {
+                        node.querySelectorAll('img, video, iframe').forEach(addResizeHandle);
+                    }
+                }
+            });
+        });
+    });
+
+    // Configurar y comenzar la observación
+    observer.observe(contenidoRubrica, {
+        childList: true,
+        subtree: true
+    });
+
+    // Agregar manejadores a elementos existentes
+    contenidoRubrica.querySelectorAll('img, video, iframe').forEach(addResizeHandle);
+}
+
+// Función para mostrar/ocultar manejadores de redimensionamiento
+function toggleResizeHandles(show) {
+    const handles = document.querySelectorAll('.resize-handle');
+    handles.forEach(handle => {
+        handle.style.display = show ? 'block' : 'none';
+    });
+}
+
+// Establecer el estado inicial de los manejadores de redimensionamiento
+document.addEventListener('DOMContentLoaded', function() {
+    initResizeHandlers();
+    
+    // Mostrar manejadores solo cuando el mouse está sobre el elemento
+    document.addEventListener('mouseover', function(e) {
+        if (e.target.matches('img, video, iframe')) {
+            const handle = e.target.parentElement.querySelector('.resize-handle');
+            if (handle) handle.style.display = 'block';
+        }
+    });
+
+    document.addEventListener('mouseout', function(e) {
+        if (e.target.matches('img, video, iframe')) {
+            const handle = e.target.parentElement.querySelector('.resize-handle');
+            if (handle && !isResizing) handle.style.display = 'none';
+        }
+    });
 });
-      // Parte 3: Funciones de grabación de audio y video
 
 // Variables globales para grabación
 let mediaRecorder = null;
@@ -2031,12 +1377,12 @@ async function startRecording(type) {
             return;
         }
 
-        // Verificar si el navegador soporta la API
+        // Verificar soporte de API
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             throw new Error('Tu navegador no soporta la grabación de medios. Por favor, usa Chrome, Firefox o Edge actualizado.');
         }
 
-        // Solicitar permisos explícitamente
+        // Configurar restricciones según el tipo
         const constraints = {
             audio: {
                 echoCancellation: true,
@@ -2054,22 +1400,24 @@ async function startRecording(type) {
             mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
         } catch (permissionError) {
             if (permissionError.name === 'NotAllowedError') {
-                throw new Error('Por favor, permite el acceso a tu ' + (type === 'video' ? 'cámara y micrófono' : 'micrófono') + ' para continuar.');
+                throw new Error('Por favor, permite el acceso a tu ' + 
+                    (type === 'video' ? 'cámara y micrófono' : 'micrófono') + ' para continuar.');
             } else if (permissionError.name === 'NotFoundError') {
-                throw new Error('No se encontró ningún dispositivo de ' + (type === 'video' ? 'video/audio' : 'audio') + '. Por favor, verifica que esté conectado correctamente.');
+                throw new Error('No se encontró ningún dispositivo de ' + 
+                    (type === 'video' ? 'video/audio' : 'audio') + '. Por favor, verifica que esté conectado correctamente.');
             } else {
                 throw permissionError;
             }
         }
         
-        // Configurar vista previa de video si es necesario
+        // Configurar vista previa de video
         if (type === 'video') {
             const videoPreview = document.getElementById('videoPreview');
             videoPreview.srcObject = mediaStream;
-            videoPreview.play().catch(console.error);
+            await videoPreview.play();
         }
         
-        // Intentar crear el MediaRecorder con diferentes códecs
+        // Intentar diferentes códecs
         let options = {};
         const mimeTypes = type === 'video' 
             ? ['video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']
@@ -2082,11 +1430,12 @@ async function startRecording(type) {
             }
         }
 
+        // Crear MediaRecorder
         mediaRecorder = new MediaRecorder(mediaStream, options);
         recordedChunks = [];
         recordingType = type;
         
-        // Configurar event handlers del MediaRecorder
+        // Configurar eventos del MediaRecorder
         mediaRecorder.ondataavailable = (e) => {
             if (e.data.size > 0) {
                 recordedChunks.push(e.data);
@@ -2113,8 +1462,8 @@ async function startRecording(type) {
             }
         };
         
-        // Iniciar grabación y temporizador
-        mediaRecorder.start(1000); // Fragmentar la grabación cada segundo
+        // Iniciar grabación
+        mediaRecorder.start(1000);
         startTime = new Date();
         timerInterval = setInterval(() => updateTimer(`${type}Timer`), 1000);
         
@@ -2129,7 +1478,6 @@ async function startRecording(type) {
         errorElement.textContent = error.message;
         errorElement.style.display = 'block';
         
-        // Asegurarse de limpiar los recursos si hay un error
         if (mediaStream) {
             stopMediaStream();
         }
@@ -2158,7 +1506,6 @@ function saveRecording() {
     });
     const url = URL.createObjectURL(blob);
     
-    // Insertar en el editor
     const contentDiv = document.getElementById('contenidoRubrica');
     contentDiv.focus();
     
@@ -2170,7 +1517,7 @@ function saveRecording() {
     closeRecordingDialog(recordingType);
 }
 
-// Función para detener el stream de medios
+// Funciones auxiliares de grabación
 function stopMediaStream() {
     if (mediaStream) {
         mediaStream.getTracks().forEach(track => track.stop());
@@ -2178,7 +1525,6 @@ function stopMediaStream() {
     }
 }
 
-// Función para actualizar el temporizador
 function updateTimer(timerId) {
     const now = new Date();
     const diff = now - startTime;
@@ -2188,7 +1534,7 @@ function updateTimer(timerId) {
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Función para mostrar el diálogo de grabación
+// Funciones de diálogo de grabación
 function showRecordingDialog(type) {
     recordingType = type;
     const dialogId = `${type}RecordingDialog`;
@@ -2197,10 +1543,12 @@ function showRecordingDialog(type) {
     document.getElementById(overlayId).style.display = 'block';
     document.getElementById(dialogId).style.display = 'block';
     
-    // Resetear la interfaz
+    // Resetear interfaz
     document.getElementById(`${type}Timer`).textContent = '00:00';
-    document.getElementById(`${type}Status`).textContent = 'El navegador solicitará permisos para acceder a tu ' + 
-        (type === 'video' ? 'cámara y micrófono' : 'micrófono') + '. Por favor, permite el acceso cuando se te solicite.';
+    document.getElementById(`${type}Status`).textContent = 
+        'El navegador solicitará permisos para acceder a tu ' + 
+        (type === 'video' ? 'cámara y micrófono' : 'micrófono') + 
+        '. Por favor, permite el acceso cuando se te solicite.';
     document.getElementById(`${type}Error`).style.display = 'none';
     document.getElementById(`start${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'inline-flex';
     document.getElementById(`stop${type.charAt(0).toUpperCase() + type.slice(1)}Record`).style.display = 'none';
@@ -2211,7 +1559,6 @@ function showRecordingDialog(type) {
     preview.src = '';
 }
 
-// Función para cerrar el diálogo de grabación
 function closeRecordingDialog(type) {
     const dialogId = `${type}RecordingDialog`;
     const overlayId = `${type}RecordingOverlay`;
@@ -2219,46 +1566,26 @@ function closeRecordingDialog(type) {
     document.getElementById(dialogId).style.display = 'none';
     document.getElementById(overlayId).style.display = 'none';
     
-    // Detener la grabación si está activa
     if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
     }
     
-    // Limpiar el stream de medios
     stopMediaStream();
     
-    // Detener el temporizador
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
     }
     
-    // Resetear la interfaz
+    // Resetear interfaz
     document.getElementById(`${type}Timer`).textContent = '00:00';
     document.getElementById(`${type}Status`).textContent = 'Listo para grabar';
     document.getElementById(`${type}Error`).style.display = 'none';
     
-    // Limpiar la vista previa
     const preview = document.getElementById(`${type}Preview`);
     preview.srcObject = null;
     preview.src = '';
 }
-
-// Inicializar event listeners cuando el documento esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    // Audio recording buttons
-    document.getElementById('startAudioRecord').addEventListener('click', () => startRecording('audio'));
-    document.getElementById('stopAudioRecord').addEventListener('click', stopRecording);
-    document.getElementById('saveAudioRecord').addEventListener('click', saveRecording);
-    document.getElementById('cancelAudioRecord').addEventListener('click', () => closeRecordingDialog('audio'));
-
-    // Video recording buttons
-    document.getElementById('startVideoRecord').addEventListener('click', () => startRecording('video'));
-    document.getElementById('stopVideoRecord').addEventListener('click', stopRecording);
-    document.getElementById('saveVideoRecord').addEventListener('click', saveRecording);
-    document.getElementById('cancelVideoRecord').addEventListener('click', () => closeRecordingDialog('video'));
-});
-      // Parte 4: Funciones de autoguardado y gestión de archivos
 
 // Variables globales para el autoguardado
 let autoSaveInterval = null;
@@ -2327,7 +1654,8 @@ function descargarContenido() {
         }
         .media-container img,
         .media-container video,
-        .media-container audio {
+        .media-container audio,
+        .media-container iframe {
             max-width: 100%;
         }
         .media-container.align-left { float: left; margin-right: 20px; }
@@ -2357,91 +1685,116 @@ function descargarContenido() {
 }
 
 // Función para guardar el estado actual
-function saveCurrentEdit() {
-    // Obtener el contenido actual
+function saveCurrentState() {
     const content = {
         input: document.getElementById('rubricaInput').value,
         preview: document.getElementById('contenidoRubrica').innerHTML,
         timestamp: new Date().toISOString()
     };
     
-    // Crear el blob con el contenido
-    const blob = new Blob([JSON.stringify(content)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    // Crear el enlace de descarga
-    const a = document.createElement('a');
-    a.href = url;
-    const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
-    a.download = `edicion_${timestamp}.json`;
-    
-    // Descargar el archivo
-    document.body.appendChild(a);
-    a.click();
-    
-    // Limpiar
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+        localStorage.setItem('editorState', JSON.stringify(content));
+        return true;
+    } catch (error) {
+        console.error('Error al guardar el estado:', error);
+        return false;
+    }
 }
 
-// Función para cargar una edición guardada
-function loadSavedEdit() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
+// Función para restaurar el último estado guardado
+function restoreLastState() {
+    try {
+        const savedState = localStorage.getItem('editorState');
+        if (savedState) {
+            const content = JSON.parse(savedState);
+            document.getElementById('rubricaInput').value = content.input;
+            document.getElementById('contenidoRubrica').innerHTML = content.preview;
+            document.getElementById('preview').style.display = 'block';
+            return true;
+        }
+    } catch (error) {
+        console.error('Error al restaurar el estado:', error);
+    }
+    return false;
+}
+
+// Función para habilitar el autoguardado
+function enableAutoSave() {
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+    }
     
-    input.onchange = function(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const content = JSON.parse(e.target.result);
-                
-                // Restaurar el contenido
-                document.getElementById('rubricaInput').value = content.input;
-                document.getElementById('contenidoRubrica').innerHTML = content.preview;
-                document.getElementById('preview').style.display = 'block';
-                
-                // Opcional: Mostrar mensaje de éxito
-                alert('Edición cargada correctamente');
-                
-            } catch (error) {
-                console.error('Error al cargar el archivo:', error);
-                alert('Error al cargar el archivo. Asegúrate de que sea un archivo de edición válido.');
+    autoSaveInterval = setInterval(() => {
+        if (saveCurrentState()) {
+            const indicator = document.querySelector('.autosave-indicator');
+            if (indicator) {
+                indicator.textContent = 'Guardado automático: ' + new Date().toLocaleTimeString();
+                indicator.classList.add('visible');
+                setTimeout(() => {
+                    indicator.classList.remove('visible');
+                }, 2000);
             }
-        };
-        
-        reader.onerror = function() {
-            alert('Error al leer el archivo');
-        };
-        
-        reader.readAsText(file);
+        }
+    }, AUTO_SAVE_DELAY);
+}
+
+// Función para deshabilitar el autoguardado
+function disableAutoSave() {
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+        autoSaveInterval = null;
+    }
+}
+
+// Inicializar funciones cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Intentar restaurar el último estado guardado
+    restoreLastState();
+    
+    // Habilitar autoguardado
+    enableAutoSave();
+    
+    // Manejar eventos de cierre de ventana
+    window.addEventListener('beforeunload', function(e) {
+        if (document.getElementById('rubricaInput').value.trim() !== '') {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+    
+    // Inicializar todos los eventos necesarios
+    initMediaEvents();
+    initResizeHandlers();
+    
+    // Configurar eventos de grabación
+    const recordingButtons = {
+        audio: ['startAudioRecord', 'stopAudioRecord', 'saveAudioRecord', 'cancelAudioRecord'],
+        video: ['startVideoRecord', 'stopVideoRecord', 'saveVideoRecord', 'cancelVideoRecord']
     };
     
-    input.click();
-}
-
-// Modificar la barra de herramientas para incluir los nuevos botones
-function initSaveLoadButtons() {
-    const toolbarGroup = document.createElement('div');
-    toolbarGroup.className = 'toolbar-group';
-    toolbarGroup.innerHTML = `
-        <button class="tool-button" onclick="saveCurrentEdit()" title="Guardar edición actual">
-            <i class="fas fa-save"></i>
-        </button>
-        <button class="tool-button" onclick="loadSavedEdit()" title="Cargar edición guardada">
-            <i class="fas fa-folder-open"></i>
-        </button>
-    `;
-    
-    document.querySelector('.editor-toolbar').appendChild(toolbarGroup);
-}
-
-// Inicializar los botones cuando el documento esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    initSaveLoadButtons();
+    Object.entries(recordingButtons).forEach(([type, buttons]) => {
+        buttons.forEach(buttonId => {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                const action = buttonId.replace(type.charAt(0).toUpperCase() + type.slice(1), '').toLowerCase();
+                switch (action) {
+                    case 'startrecord':
+                        button.onclick = () => startRecording(type);
+                        break;
+                    case 'stoprecord':
+                        button.onclick = stopRecording;
+                        break;
+                    case 'saverecord':
+                        button.onclick = saveRecording;
+                        break;
+                    case 'cancelrecord':
+                        button.onclick = () => closeRecordingDialog(type);
+                        break;
+                }
+            }
+        });
+    });
 });
-        </script>
-  
-</body></html>
+</script>
+</body>
+</html>
