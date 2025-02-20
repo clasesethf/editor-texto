@@ -11,6 +11,8 @@
     <!-- MathJax -->
     <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <script src="https://fadsf.h5p.com/js/h5p-resizer.js" charset="UTF-8"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.2.2/abcjs-basic.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.2.2/abcjs-basic.js">
     <script>
         window.MathJax = {
             tex: {
@@ -46,7 +48,115 @@
             align-items: center;
         }
 
-        .container {
+      #contenidoRubrica {
+    position: relative;
+    min-height: 500px;
+}
+
+#contenidoRubrica p {
+    position: relative;
+    border: 1px dashed transparent;
+    margin: 0.5em 0;
+    padding: 0.25em;
+    min-height: 1.2em;
+}
+
+#contenidoRubrica p:hover {
+    border-color: #e0e0e0;
+    background: rgba(0,0,0,0.02);
+}
+
+#contenidoRubrica p::after {
+    content: "¶";
+    position: absolute;
+    right: -20px;
+    color: #ddd;
+    font-family: monospace;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+#contenidoRubrica p:hover::after {
+    opacity: 1;
+}
+
+#contenidoRubrica p:empty::before {
+    content: "¶";
+    color: #ccc;
+    font-family: monospace;
+}
+
+#contenidoRubrica h1,
+#contenidoRubrica h2,
+#contenidoRubrica h3,
+#contenidoRubrica h4,
+#contenidoRubrica h5,
+#contenidoRubrica h6 {
+    position: relative;
+    border-left: 3px solid #e0e0e0;
+    padding-left: 10px;
+    margin: 1em 0;
+}
+
+#contenidoRubrica ul,
+#contenidoRubrica ol {
+    border-left: 2px dashed #e0e0e0;
+    padding-left: 20px;
+    margin: 0.5em 0;
+}
+
+#contenidoRubrica .media-container {
+    border: 1px dashed #ccc;
+    padding: 5px;
+    margin: 10px 0;
+    position: relative;
+}
+
+#contenidoRubrica .media-container::before {
+    content: "Media";
+    position: absolute;
+    top: -18px;
+    left: 0;
+    font-size: 12px;
+    color: #999;
+    background: white;
+    padding: 0 5px;
+}
+	  
+	  .abc-notation {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.abc-source {
+    font-family: monospace;
+    white-space: pre;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #e9ecef;
+    border-radius: 4px;
+    display: none;
+}
+
+.abc-paper {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Añadir en la barra de herramientas */
+.toolbar-group .abc-button {
+      background-color: #f0f0f0;
+    color: black;
+}
+
+.toolbar-group .abc-button:hover {
+    background: #e0e0e0;
+}
+        
+      .container {
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 15px;
@@ -99,6 +209,19 @@
             resize: vertical;
             box-sizing: border-box;
             font-family: 'Roboto', sans-serif;
+        }
+textarea1 {
+            width: 100%;
+            height: 80px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+  display:NONE;
         }
 
         textarea:focus {
@@ -341,7 +464,7 @@
             padding: 40px;
             background: white;
             border-radius: 8px;
-            display: none ;
+            display:  ;
             width: 100%;
           
             box-sizing: border-box;
@@ -1429,9 +1552,9 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
         <div class="logo-container no-print">
             <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford" id="headerLogo">
         </div>
-        <h1 class="no-print">Conversio</h1>
+        <h1 class="no-print">Editor de Texto</h1>
         
-        <textarea id="rubricaInput" class="no-print" placeholder="Pegá aquí el texto generado por la IA..."></textarea>
+        <textarea id="rubricaInput" class="no-print" style="display: none;" placeholder="Pegá aquí el texto generado por la IA..."></textarea>
         
        
         
@@ -1529,6 +1652,12 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
     </button>
 </div>
           
+          <div class="toolbar-group">
+    <button class="tool-button abc-button" onclick="insertABCNotation()" title="Insertar partitura musical">
+        <i class="fas fa-music"></i>
+    </button>
+</div>
+          
           
           
             <div class="toolbar-group">
@@ -1552,11 +1681,26 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
                 <img src="https://www.henryford.edu.ar/uploads/logo512_f4b4cdb9e9.png" alt="Logo Henry Ford">
             </div>
             
-            <div id="contenidoRubrica" contenteditable="true"></div>
+<div id="contenidoRubrica" contenteditable="true" spellcheck="true"></div>			
           
         </div>
 
-        <!-- Diálogo para vista previa de medios -->
+      <div id="abcDialogOverlay" class="custom-dialog-overlay"></div>
+<div id="abcDialog" class="custom-dialog">
+    <h3>Insertar Partitura Musical</h3>
+    <div class="custom-dialog-content">
+        <textarea id="abcInput" rows="10" style="width: 100%; font-family: monospace;" 
+            placeholder="Ingresa la notación ABC aquí..."></textarea>
+        <div id="abcPreview" style="margin-top: 15px;"></div>
+    </div>
+    <div class="dialog-buttons">
+        <button class="dialog-button dialog-button-secondary" onclick="closeCustomDialog('abcDialog')">Cancelar</button>
+        <button class="dialog-button dialog-button-primary" onclick="insertCustomABC()">Insertar</button>
+    </div>
+</div>
+  
+      
+      <!-- Diálogo para vista previa de medios -->
         <div id="mediaDialogOverlay" class="media-dialog-overlay"></div>
         <div id="mediaDialog" class="media-dialog">
             <h3>Vista previa</h3>
@@ -1960,8 +2104,7 @@ function imprimirContenido() {
                 iframe, video, audio { max-width: 100%; }
                 .logo-container1 { text-align: center; margin-top: 10px; }
                 .logo-container1 img { width: 60px; }
-                h1, h2, h3, h4 { color: #007bff; }
-                a { color: #007bff; }
+                
                 .math-formula { 
                     margin: 1em 0;
                     page-break-inside: avoid;
@@ -1998,7 +2141,7 @@ function imprimirContenido() {
 function borrarContenido() {
     document.getElementById('rubricaInput').value = '';
     document.getElementById('contenidoRubrica').innerHTML = '';
-    document.getElementById('preview').style.display = 'none';
+    document.getElementById('preview').style.display = '';
 }
 
 // Event Listener para previsualización automática
@@ -2676,8 +2819,7 @@ function descargarContenido() {
         iframe, video, audio { max-width: 100%; }
         .logo-container { text-align: center; margin-bottom: 20px; }
         .logo-container img { width: 80px; }
-        h1, h2, h3, h4 { color: #007bff; }
-        a { color: #007bff; }
+       
         .math-formula { margin: 1em 0; }
         table { 
             border-collapse: collapse; 
@@ -3139,9 +3281,182 @@ function resetPosition() {
         MathJax.typesetPromise([formula]).catch(console.error);
     }
 }   
+      
+      function insertABCNotation() {
+    showCustomDialog('abcDialog');
+    const abcInput = document.getElementById('abcInput');
+    const abcPreview = document.getElementById('abcPreview');
+    
+    // Ejemplo por defecto
+    abcInput.value = ``;
+    
+    // Renderizar vista previa
+    updateABCPreview();
+    
+    // Actualizar vista previa mientras se escribe
+    abcInput.addEventListener('input', updateABCPreview);
+}
+
+// Función para actualizar la vista previa de ABC
+function updateABCPreview() {
+    const abcInput = document.getElementById('abcInput');
+    const abcPreview = document.getElementById('abcPreview');
+    
+    // Limpiar vista previa anterior
+    abcPreview.innerHTML = '';
+    
+    try {
+        // Renderizar la notación ABC
+        ABCJS.renderAbc(abcPreview, abcInput.value, {
+            responsive: 'resize',
+            wrap: {
+                minSpacing: 1.8,
+                maxSpacing: 2.7,
+                preferredMeasuresPerLine: 4
+            }
+        });
+    } catch (error) {
+        abcPreview.innerHTML = '<p style="color: red;">Error al renderizar la partitura. Verifica la sintaxis ABC.</p>';
+    }
+}
+
+// Función para insertar la partitura en el editor
+function insertCustomABC() {
+    const abcInput = document.getElementById('abcInput');
+    const contentDiv = document.getElementById('contenidoRubrica');
+    
+    // Crear contenedor para la partitura
+    const abcContainer = document.createElement('div');
+    abcContainer.className = 'abc-notation';
+    
+    // Crear elemento para el código fuente ABC
+    const sourceCode = document.createElement('pre');
+    sourceCode.className = 'abc-source';
+    sourceCode.textContent = abcInput.value;
+    
+    // Crear elemento para la partitura renderizada
+    const paper = document.createElement('div');
+    paper.className = 'abc-paper';
+    
+    // Añadir elementos al contenedor
+    abcContainer.appendChild(sourceCode);
+    abcContainer.appendChild(paper);
+    
+    // Insertar en el editor
+    contentDiv.appendChild(abcContainer);
+    
+    // Renderizar la partitura
+    ABCJS.renderAbc(paper, abcInput.value, {
+        responsive: 'resize',
+        wrap: {
+            minSpacing: 1.8,
+            maxSpacing: 2.7,
+            preferredMeasuresPerLine: 4
+        }
+    });
+    
+    // Cerrar el diálogo
+    closeCustomDialog('abcDialog');
+}
+
+// Modificar la función formatearTexto para manejar bloques ABC
+const originalFormatearTexto = window.formatearTexto;
+window.formatearTexto = function(texto) {
+    let formatoHTML = originalFormatearTexto(texto);
+    
+    // Buscar bloques ABC (delimitados por %%%abc y %%%)
+    formatoHTML = formatoHTML.replace(/%%%abc\n([\s\S]*?)%%%/g, function(match, abcContent) {
+        const container = document.createElement('div');
+        container.className = 'abc-notation';
+        
+        const sourceCode = document.createElement('pre');
+        sourceCode.className = 'abc-source';
+        sourceCode.textContent = abcContent;
+        
+        const paper = document.createElement('div');
+        paper.className = 'abc-paper';
+        
+        container.appendChild(sourceCode);
+        container.appendChild(paper);
+        
+        // Renderizar ABC después de un pequeño retraso
+        setTimeout(() => {
+            ABCJS.renderAbc(paper, abcContent, {
+                responsive: 'resize',
+                wrap: {
+                    minSpacing: 1.8,
+                    maxSpacing: 2.7,
+                    preferredMeasuresPerLine: 4
+                }
+            });
+        }, 100);
+        
+        return container.outerHTML;
+    });
+    
+    return formatoHTML;
+};
+
+// Función para asegurar que siempre haya un párrafo
+function ensureParagraph() {
+    const contenidoRubrica = document.getElementById('contenidoRubrica');
+    if (!contenidoRubrica) return;
+
+    if (contenidoRubrica.children.length === 0) {
+        const p = document.createElement('p');
+        p.innerHTML = '<br>';
+        contenidoRubrica.appendChild(p);
+    }
+}
+
+// Función para mantener el formato de párrafos
+function initializeEditorGuides() {
+    const contenidoRubrica = document.getElementById('contenidoRubrica');
+    if (!contenidoRubrica) return;
+
+    // Observar cambios en el contenido
+    const observer = new MutationObserver(() => {
+        ensureParagraph();
+    });
+
+    observer.observe(contenidoRubrica, {
+        childList: true,
+        subtree: true,
+        characterData: true
+    });
+
+    // Event listener para Enter
+    contenidoRubrica.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            document.execCommand('insertParagraph', false);
+            ensureParagraph();
+        }
+    });
+
+    // Asegurar que haya un párrafo inicial
+    ensureParagraph();
+}
+
+// Inicializar cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEditorGuides();
+});
+
+document.getElementById('contenidoRubrica').addEventListener('paste', function(e) {
+  // Prevenir el pegado por defecto
+  e.preventDefault();
+  // Obtener el texto sin formato del portapapeles
+  const clipboardData = e.clipboardData || window.clipboardData;
+  const pastedText = clipboardData.getData('text/plain');
+  // Formatear el texto (aplicando negritas, tablas, etc.)
+  const formattedText = formatearTexto(pastedText);
+  // Insertar el contenido formateado en la posición actual del cursor
+  document.execCommand('insertHTML', false, formattedText);
+});
+
         </script>
   
 
-</div>
 
 </body></html>
