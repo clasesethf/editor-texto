@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -893,21 +894,21 @@ textarea1 {
       
       /* Estilos para el contenedor de H5P */
 .h5p-container {
-    position: relative; /* Para posicionar el manejador */
-    display: inline-block;
-    margin: 10px;
+    position: relative; /* Para posicionar el manejador */
+    display: inline-block;
+    margin: 10px;
 }
 
 /* Estilos para el manejador de redimensión */
 .resize-handle {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    width: 10px;
-    height: 10px;
-    background-color: #007bff;
-    border-radius: 50%;
-    cursor: se-resize;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: #007bff;
+    border-radius: 50%;
+    cursor: se-resize;
 }
       
       .media-tools {
@@ -1546,7 +1547,13 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
 .CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
 .CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
 .CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
-</style></head>
+</style><style type="text/css">
+
+</style>
+<script>
+
+</script>
+</head>
   <body>
     <div class="container">
         <div class="logo-container no-print">
@@ -1689,8 +1696,7 @@ mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
 <div id="abcDialog" class="custom-dialog">
     <h3>Insertar Partitura Musical</h3>
     <div class="custom-dialog-content">
-        <textarea id="abcInput" rows="10" style="width: 100%; font-family: monospace;" 
-            placeholder="Ingresa la notación ABC aquí..."></textarea>
+        <textarea id="abcInput" rows="10" style="width: 100%; font-family: monospace;" placeholder="Ingresa la notación ABC aquí..."></textarea>
         <div id="abcPreview" style="margin-top: 15px;"></div>
     </div>
     <div class="dialog-buttons">
@@ -1953,7 +1959,7 @@ function formatearTexto(texto) {
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>')
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-        .replace(/\n\n/g, '<br><br>');
+        .replace(/\n\n/g, '<br>');
 
     // Restaurar fórmulas
     formulas.forEach((formula, i) => {
@@ -2453,10 +2459,10 @@ function insertCustomH5P() {
     closeCustomDialog('h5pDialog');
   
   document.execCommand('insertHTML', false, 
-        `<div class="media-container h5p-container">
-            <iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen="true"></iframe>
-            <div class="resize-handle"></div>
-        </div>`);
+        `<div class="media-container h5p-container">
+            <iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen="true"></iframe>
+            <div class="resize-handle"></div>
+        </div>`);
 }
 
 // Funciones para manejo de elementos multimedia
@@ -3457,6 +3463,8 @@ document.getElementById('contenidoRubrica').addEventListener('paste', function(e
 
         </script>
   
+
+
 
 
 </body></html>
